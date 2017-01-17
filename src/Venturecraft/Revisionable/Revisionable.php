@@ -1,4 +1,4 @@
-<?php namespace Venturecraft\Revisionable;
+<?php namespace Convenia\Revisionable;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 

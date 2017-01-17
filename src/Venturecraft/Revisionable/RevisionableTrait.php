@@ -1,4 +1,4 @@
-<?php namespace Venturecraft\Revisionable;
+<?php namespace Convenia\Revisionable;
 
 /*
  * This file is part of the Revisionable package by Venture Craft

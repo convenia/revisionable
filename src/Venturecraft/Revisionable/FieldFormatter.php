@@ -1,6 +1,6 @@
 <?php
 
-namespace Venturecraft\Revisionable;
+namespace Convenia\Revisionable;
 
 /**
  * FieldFormatter.
