@@ -217,6 +217,7 @@ trait RevisionableTrait
 
         if ((!isset($this->revisionEnabled) || $this->revisionEnabled))
         {
+
             $revisions[] = array(
                 'revisionable_type' => $this->getMorphClass(),
                 'revisionable_id' => $this->getKey(),
@@ -249,6 +250,7 @@ trait RevisionableTrait
                 'revisionable_id' => $this->getKey(),
                 'key' => $this->getDeletedAtColumn(),
                 'old_value' => null,
+                'owner_id' => $this->getOwnerId(),
                 'new_value' => $this->{$this->getDeletedAtColumn()},
                 'user_id' => $this->getSystemUserId(),
                 'created_at' => new \DateTime(),
@@ -435,4 +437,18 @@ trait RevisionableTrait
             unset($donts);
         }
     }
+
+    public function getOwnerId()
+    {
+        $field = getenv('REVISION_OWNER_FIELD', 'identity_id');
+
+        $model = app($this->getMorphClass());
+
+        if (isset($model->{$field}) ) {
+            return $model->{$field};
+        }
+
+        return null;
+    }
+
 }
