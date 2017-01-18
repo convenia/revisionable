@@ -13,7 +13,6 @@ class addOwnerIdField extends Migration
     {
         Schema::table('revisions', function ($table) {
             $table->integer('owner_id')->nullAble();
-            $table->integer('aggregate_id')->nullAble();
         });
     }
 
