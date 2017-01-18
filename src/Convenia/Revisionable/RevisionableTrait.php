@@ -445,7 +445,7 @@ trait RevisionableTrait
     {
         $field = env('REVISION_OWNER_FIELD', 'identity_id');
 
-        $model = app($this->getMorphClass())->find($this->getKey());
+        $model = app($this->getMorphClass())->find($this->getKey())->first();
 
         if (isset($model->{$field}) ) {
             return $model->{$field};
