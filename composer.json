@@ -11,8 +11,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/VentureCraft/revisionable/issues",
-        "source": "https://github.com/VentureCraft/revisionable"
+        "issues": "https://github.com/Convenia/revisionable/issues",
+        "source": "https://github.com/Convenia/revisionable"
     },
     "require": {
         "php": ">=5.3.0",
@@ -23,7 +23,7 @@
             "src/migrations"
         ],
         "psr-0": {
-            "Venturecraft\\Revisionable": "src/"
+            "Convenia\\Revisionable": "src/"
         }
     }
 }
