@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class Revisionable
- * @package Venturecraft\Revisionable
+ * @package Convenia\Revisionable
  */
 class Revisionable extends Eloquent
 {
@@ -79,7 +79,7 @@ class Revisionable extends Eloquent
      */
     public function revisionHistory()
     {
-        return $this->morphMany('\Venturecraft\Revisionable\Revision', 'revisionable');
+        return $this->morphMany('\Convenia\Revisionable\Revision', 'revisionable');
     }
 
     /**
@@ -210,7 +210,7 @@ class Revisionable extends Eloquent
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),
             );
-            $revision = new \Venturecraft\Revisionable\Revision;
+            $revision = new \Convenia\Revisionable\Revision;
             \DB::table($revision->getTable())->insert($revisions);
         }
     }

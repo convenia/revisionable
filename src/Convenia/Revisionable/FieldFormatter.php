@@ -12,7 +12,7 @@ namespace Convenia\Revisionable;
 
 /**
  * Class FieldFormatter
- * @package Venturecraft\Revisionable
+ * @package Convenia\Revisionable
  */
 class FieldFormatter
 {

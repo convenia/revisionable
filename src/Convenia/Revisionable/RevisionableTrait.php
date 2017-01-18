@@ -9,7 +9,7 @@
 
 /**
  * Class RevisionableTrait
- * @package Venturecraft\Revisionable
+ * @package Convenia\Revisionable
  */
 trait RevisionableTrait
 {
@@ -90,7 +90,7 @@ trait RevisionableTrait
      */
     public function revisionHistory()
     {
-        return $this->morphMany('\Venturecraft\Revisionable\Revision', 'revisionable');
+        return $this->morphMany('\Convenia\Revisionable\Revision', 'revisionable');
     }
 
     /**
@@ -102,7 +102,7 @@ trait RevisionableTrait
      */
     public static function classRevisionHistory($limit = 100, $order = 'desc')
     {
-        return \Venturecraft\Revisionable\Revision::where('revisionable_type', get_called_class())
+        return \Convenia\Revisionable\Revision::where('revisionable_type', get_called_class())
             ->orderBy('updated_at', $order)->limit($limit)->get();
     }
 
@@ -256,7 +256,7 @@ trait RevisionableTrait
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),
             );
-            $revision = new \Venturecraft\Revisionable\Revision;
+            $revision = new \Convenia\Revisionable\Revision;
             \DB::table($revision->getTable())->insert($revisions);
             \Event::fire('revisionable.deleted', array('model' => $this, 'revisions' => $revisions));
         }
@@ -440,15 +440,16 @@ trait RevisionableTrait
 
     public function getOwnerId()
     {
-        $field = getenv('REVISION_OWNER_FIELD', 'identity_id');
+        $field = env('REVISION_OWNER_FIELD', 'identity_id');
 
-        $model = app($this->getMorphClass());
+        $model = app($this->getMorphClass())->find($this->getKey());
 
         if (isset($model->{$field}) ) {
             return $model->{$field};
         }
 
-        return null;
+        return 0;
     }
+
 
 }
