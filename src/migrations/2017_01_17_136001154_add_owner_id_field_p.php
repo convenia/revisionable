@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class addOwnerIdField extends Migration
+class addOwnerIdFieldP extends Migration
 {
     /**
      * Run the migrations.
