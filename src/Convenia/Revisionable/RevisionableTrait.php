@@ -254,7 +254,6 @@ trait RevisionableTrait
                 'old_value' => null,
                 'owner_id' => $this->getOwnerId(),
                 'new_value' => $this->{$this->getDeletedAtColumn()},
-                'owner_id' => $this->getOwnerId(),
                 'user_id' => $this->getSystemUserId(),
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),
