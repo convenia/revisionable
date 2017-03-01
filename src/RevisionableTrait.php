@@ -1,6 +1,6 @@
-<?php namespace Convenia\Revisionable;
+<?php
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
+namespace Convenia\Revisionable;
 
 /*
  * This file is part of the Revisionable package by Venture Craft
@@ -10,52 +10,63 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 
 /**
- * Class Revisionable
- * @package Convenia\Revisionable
+ * Class RevisionableTrait.
  */
-class Revisionable extends Eloquent
+trait RevisionableTrait
 {
     /**
-     * @var
+     * @var array
      */
-    private $originalData;
-
-    /**
-     * @var
-     */
-    private $updatedData;
-
-    /**
-     * @var
-     */
-    private $updating;
+    private $originalData = [];
 
     /**
      * @var array
      */
-    private $dontKeep = array();
+    private $updatedData = [];
+
+    /**
+     * @var bool
+     */
+    private $updating = false;
 
     /**
      * @var array
      */
-    private $doKeep = array();
+    private $dontKeep = [];
 
     /**
-     * Keeps the list of values that have been updated
+     * @var array
+     */
+    private $doKeep = [];
+
+    /**
+     * Keeps the list of values that have been updated.
      *
      * @var array
      */
-    protected $dirtyData = array();
+    protected $dirtyData = [];
+
+    /**
+     * Ensure that the bootRevisionableTrait is called only
+     * if the current installation is a laravel 4 installation
+     * Laravel 5 will call bootRevisionableTrait() automatically.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        if (! method_exists(get_called_class(), 'bootTraits')) {
+            static::bootRevisionableTrait();
+        }
+    }
 
     /**
      * Create the event listeners for the saving and saved events
      * This lets us save revisions whenever a save is made, no matter the
      * http method.
      */
-    public static function boot()
+    public static function bootRevisionableTrait()
     {
-        parent::boot();
-
         static::saving(function ($model) {
             $model->preSave();
         });
@@ -64,7 +75,7 @@ class Revisionable extends Eloquent
             $model->postSave();
         });
 
-        static::created(function($model){
+        static::created(function ($model) {
             $model->postCreate();
         });
 
@@ -83,17 +94,30 @@ class Revisionable extends Eloquent
     }
 
     /**
+     * Generates a list of the last $limit revisions made to any objects of the class it is being called from.
+     *
+     * @param int $limit
+     * @param string $order
+     * @return mixed
+     */
+    public static function classRevisionHistory($limit = 100, $order = 'desc')
+    {
+        return \Convenia\Revisionable\Revision::where('revisionable_type', get_called_class())
+            ->orderBy('updated_at', $order)->limit($limit)->get();
+    }
+
+    /**
      * Invoked before a model is saved. Return false to abort the operation.
      *
      * @return bool
      */
     public function preSave()
     {
-        if (!isset($this->revisionEnabled) || $this->revisionEnabled) {
+        if (! isset($this->revisionEnabled) || $this->revisionEnabled) {
             // if there's no revisionEnabled. Or if there is, if it's true
 
             $this->originalData = $this->original;
-            $this->updatedData  = $this->attributes;
+            $this->updatedData = $this->attributes;
 
             // we can only safely compare basic items,
             // so for now we drop any object based items, like DateTime
@@ -101,6 +125,7 @@ class Revisionable extends Eloquent
                 if (gettype($val) == 'object' && ! method_exists($val, '__toString')) {
                     unset($this->originalData[$key]);
                     unset($this->updatedData[$key]);
+                    array_push($this->dontKeep, $key);
                 }
             }
 
@@ -122,7 +147,6 @@ class Revisionable extends Eloquent
         }
     }
 
-
     /**
      * Called after a model is successfully saved.
      *
@@ -130,125 +154,147 @@ class Revisionable extends Eloquent
      */
     public function postSave()
     {
+        if (isset($this->historyLimit) && $this->revisionHistory()->count() >= $this->historyLimit) {
+            $LimitReached = true;
+        } else {
+            $LimitReached = false;
+        }
+        if (isset($this->revisionCleanup)) {
+            $RevisionCleanup = $this->revisionCleanup;
+        } else {
+            $RevisionCleanup = false;
+        }
 
         // check if the model already exists
-        if ((!isset($this->revisionEnabled) || $this->revisionEnabled) && $this->updating) {
+        if (((! isset($this->revisionEnabled) || $this->revisionEnabled) && $this->updating) && (! $LimitReached || $RevisionCleanup)) {
             // if it does, it means we're updating
 
             $changes_to_record = $this->changedRevisionableFields();
 
-            $revisions = array();
+            $revisions = [];
 
             foreach ($changes_to_record as $key => $change) {
-                $revisions[] = array(
-                    'revisionable_type'     => $this->getMorphClass(),
-                    'revisionable_id'       => $this->getKey(),
-                    'key'                   => $key,
-                    'old_value'             => array_get($this->originalData, $key),
-                    'new_value'             => $this->updatedData[$key],
-                    'user_id'               => $this->getSystemUserId(),
-                    'created_at'            => new \DateTime(),
-                    'updated_at'            => new \DateTime(),
-                );
+                $revisions[] = [
+                    'revisionable_type' => $this->getMorphClass(),
+                    'revisionable_id' => $this->getKey(),
+                    'key' => $key,
+                    'owner_id' => $this->getOwnerId(),
+                    'old_value' => array_get($this->originalData, $key),
+                    'new_value' => $this->updatedData[$key],
+                    'user_id' => $this->getSystemUserId(),
+                    'created_at' => new \DateTime(),
+                    'updated_at' => new \DateTime(),
+                ];
             }
 
             if (count($revisions) > 0) {
+                if ($LimitReached && $RevisionCleanup) {
+                    $toDelete = $this->revisionHistory()->orderBy('id', 'asc')->limit(count($revisions))->get();
+                    foreach ($toDelete as $delete) {
+                        $delete->delete();
+                    }
+                }
                 $revision = new Revision;
                 \DB::table($revision->getTable())->insert($revisions);
+                \Event::fire('revisionable.saved', ['model' => $this, 'revisions' => $revisions]);
             }
         }
     }
 
     /**
-    * Called after record successfully created
-    */
+     * Called after record successfully created.
+     */
     public function postCreate()
     {
 
         // Check if we should store creations in our revision history
         // Set this value to true in your model if you want to
-        if(empty($this->revisionCreationsEnabled))
-        {
+        if (empty($this->revisionCreationsEnabled)) {
             // We should not store creations.
             return false;
         }
 
-        if ((!isset($this->revisionEnabled) || $this->revisionEnabled))
-        {
-            $revisions[] = array(
+        if ((! isset($this->revisionEnabled) || $this->revisionEnabled)) {
+            $revisions[] = [
                 'revisionable_type' => $this->getMorphClass(),
                 'revisionable_id' => $this->getKey(),
                 'key' => self::CREATED_AT,
                 'old_value' => null,
                 'new_value' => $this->{self::CREATED_AT},
+                'owner_id' => $this->getOwnerId(),
                 'user_id' => $this->getSystemUserId(),
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),
-            );
+            ];
 
             $revision = new Revision;
             \DB::table($revision->getTable())->insert($revisions);
-
+            \Event::fire('revisionable.created', ['model' => $this, 'revisions' => $revisions]);
         }
     }
 
     /**
-     * If softdeletes are enabled, store the deleted time
+     * If softdeletes are enabled, store the deleted time.
      */
     public function postDelete()
     {
-        if ((!isset($this->revisionEnabled) || $this->revisionEnabled)
+        if ((! isset($this->revisionEnabled) || $this->revisionEnabled)
             && $this->isSoftDelete()
-            && $this->isRevisionable($this->getDeletedAtColumn())) {
-            $revisions[] = array(
+            && $this->isRevisionable($this->getDeletedAtColumn())
+        ) {
+            $revisions[] = [
                 'revisionable_type' => $this->getMorphClass(),
                 'revisionable_id' => $this->getKey(),
                 'key' => $this->getDeletedAtColumn(),
                 'old_value' => null,
+                'owner_id' => $this->getOwnerId(),
                 'new_value' => $this->{$this->getDeletedAtColumn()},
                 'user_id' => $this->getSystemUserId(),
                 'created_at' => new \DateTime(),
                 'updated_at' => new \DateTime(),
-            );
+            ];
             $revision = new \Convenia\Revisionable\Revision;
             \DB::table($revision->getTable())->insert($revisions);
+            \Event::fire('revisionable.deleted', ['model' => $this, 'revisions' => $revisions]);
         }
     }
 
     /**
      * Attempt to find the user id of the currently logged in user
-     * Supports Cartalyst Sentry/Sentinel based authentication, as well as stock Auth
+     * Supports Cartalyst Sentry/Sentinel based authentication, as well as stock Auth.
      **/
-    private function getSystemUserId()
+    public function getSystemUserId()
     {
         try {
-            if (class_exists($class = '\Cartalyst\Sentry\Facades\Laravel\Sentry')
-                    || class_exists($class = '\Cartalyst\Sentinel\Laravel\Facades\Sentinel')) {
+            if (class_exists($class = '\SleepingOwl\AdminAuth\Facades\AdminAuth')
+                || class_exists($class = '\Cartalyst\Sentry\Facades\Laravel\Sentry')
+                || class_exists($class = '\Cartalyst\Sentinel\Laravel\Facades\Sentinel')
+            ) {
                 return ($class::check()) ? $class::getUser()->id : null;
             } elseif (\Auth::check()) {
                 return \Auth::user()->getAuthIdentifier();
             }
         } catch (\Exception $e) {
-            return null;
+            return;
         }
 
-        return null;
+        return;
     }
 
     /**
      * Get all of the changes that have been made, that are also supposed
-     * to have their changes recorded
+     * to have their changes recorded.
      *
      * @return array fields with new data, that should be recorded
      */
     private function changedRevisionableFields()
     {
-        $changes_to_record = array();
+        $changes_to_record = [];
         foreach ($this->dirtyData as $key => $value) {
             // check that the field is revisionable, and double check
             // that it's actually new data in case dirty is, well, clean
-            if ($this->isRevisionable($key) && !is_array($value)) {
-                if (!isset($this->originalData[$key]) || $this->originalData[$key] != $this->updatedData[$key]) {
+            if ($this->isRevisionable($key) && ! is_array($value)) {
+                if (! isset($this->originalData[$key]) || $this->originalData[$key] != $this->updatedData[$key]) {
                     $changes_to_record[$key] = $value;
                 }
             } else {
@@ -263,7 +309,7 @@ class Revisionable extends Eloquent
     }
 
     /**
-     * Check if this field should have a revision kept
+     * Check if this field should have a revision kept.
      *
      * @param string $key
      *
@@ -282,11 +328,12 @@ class Revisionable extends Eloquent
         if (isset($this->dontKeep) && in_array($key, $this->dontKeep)) {
             return false;
         }
+
         return empty($this->doKeep);
     }
 
     /**
-     * Check if soft deletes are currently enabled on this model
+     * Check if soft deletes are currently enabled on this model.
      *
      * @return bool
      */
@@ -294,7 +341,7 @@ class Revisionable extends Eloquent
     {
         // check flag variable used in laravel 4.2+
         if (isset($this->forceDeleting)) {
-            return !$this->forceDeleting;
+            return ! $this->forceDeleting;
         }
 
         // otherwise, look for flag used in older versions
@@ -346,7 +393,7 @@ class Revisionable extends Eloquent
      */
     public function getRevisionNullString()
     {
-        return isset($this->revisionNullString)?$this->revisionNullString:'nothing';
+        return isset($this->revisionNullString) ? $this->revisionNullString : 'nothing';
     }
 
     /**
@@ -359,13 +406,13 @@ class Revisionable extends Eloquent
      */
     public function getRevisionUnknownString()
     {
-        return isset($this->revisionUnknownString)?$this->revisionUnknownString:'unknown';
+        return isset($this->revisionUnknownString) ? $this->revisionUnknownString : 'unknown';
     }
 
     /**
      * Disable a revisionable field temporarily
      * Need to do the adding to array longhanded, as there's a
-     * PHP bug https://bugs.php.net/bug.php?id=42030
+     * PHP bug https://bugs.php.net/bug.php?id=42030.
      *
      * @param mixed $field
      *
@@ -373,8 +420,8 @@ class Revisionable extends Eloquent
      */
     public function disableRevisionField($field)
     {
-        if (!isset($this->dontKeepRevisionOf)) {
-            $this->dontKeepRevisionOf = array();
+        if (! isset($this->dontKeepRevisionOf)) {
+            $this->dontKeepRevisionOf = [];
         }
         if (is_array($field)) {
             foreach ($field as $one_field) {
@@ -386,5 +433,18 @@ class Revisionable extends Eloquent
             $this->dontKeepRevisionOf = $donts;
             unset($donts);
         }
+    }
+
+    public function getOwnerId()
+    {
+        $field = env('REVISION_OWNER_FIELD', 'identity_id');
+
+        $model = app($this->getMorphClass())->find($this->getKey());
+
+        if (isset($model->{$field})) {
+            return $model->{$field};
+        }
+
+        return 0;
     }
 }

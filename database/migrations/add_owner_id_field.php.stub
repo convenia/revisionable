@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class addOwnerIdFieldP extends Migration
@@ -11,7 +12,7 @@ class addOwnerIdFieldP extends Migration
      */
     public function up()
     {
-        Schema::table('revisions', function ($table) {
+        Schema::table('revisions', function (Blueprint $table) {
             $table->integer('owner_id')->nullAble();
         });
     }

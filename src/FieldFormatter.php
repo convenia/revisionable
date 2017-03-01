@@ -11,8 +11,7 @@ namespace Convenia\Revisionable;
  */
 
 /**
- * Class FieldFormatter
- * @package Convenia\Revisionable
+ * Class FieldFormatter.
  */
 class FieldFormatter
 {
@@ -54,7 +53,7 @@ class FieldFormatter
      *
      * @return string
      */
-    public static function isEmpty($value, $options = array())
+    public static function isEmpty($value, $options = [])
     {
         $value_set = isset($value) && $value != '';
 
@@ -71,15 +70,15 @@ class FieldFormatter
      */
     public static function boolean($value, $options = null)
     {
-        if (!is_null($options)) {
+        if (! is_null($options)) {
             $options = explode('|', $options);
         }
 
         if (sizeof($options) != 2) {
-            $options = array('No', 'Yes');
+            $options = ['No', 'Yes'];
         }
 
-        return $options[!!$value];
+        return $options[! ! $value];
     }
 
     /**
@@ -98,9 +97,9 @@ class FieldFormatter
 
         return sprintf($format, $value);
     }
-    
+
     /**
-     * Format the datetime
+     * Format the datetime.
      *
      * @param string $value
      * @param string $format
@@ -110,9 +109,9 @@ class FieldFormatter
     public static function datetime($value, $format = 'Y-m-d H:i:s')
     {
         if (empty($value)) {
-            return null;    
+            return;
         }
-        
+
         $datetime = new \DateTime($value);
 
         return $datetime->format($format);
