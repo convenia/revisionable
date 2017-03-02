@@ -17,7 +17,9 @@ php artisan vendor:publish --provider="Convenia\Revisionable\RevisionableService
 
 After the migration has been published you can create the revisions table by running the migrations:
 
-```php artisan migrate```
+```
+php artisan migrate
+```
 
 ## Contributing
 

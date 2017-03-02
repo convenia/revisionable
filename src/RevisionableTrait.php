@@ -445,6 +445,6 @@ trait RevisionableTrait
             return $model->{$field};
         }
 
-        return 0;
+        return null;
     }
 }
