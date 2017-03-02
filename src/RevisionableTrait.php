@@ -155,19 +155,23 @@ trait RevisionableTrait
      */
     public function postSave()
     {
+        $limitReached = false;
+
         if (isset($this->historyLimit) && $this->revisionHistory()->count() >= $this->historyLimit) {
-            $LimitReached = true;
-        } else {
-            $LimitReached = false;
-        }
-        if (isset($this->revisionCleanup)) {
-            $RevisionCleanup = $this->revisionCleanup;
-        } else {
-            $RevisionCleanup = false;
+            $limitReached = true;
         }
 
+        $revisionCleanup = false;
+
+        if (isset($this->revisionCleanup)) {
+            $revisionCleanup = $this->revisionCleanup;
+        }
+        
         // check if the model already exists
-        if (((! isset($this->revisionEnabled) || $this->revisionEnabled) && $this->updating) && (! $LimitReached || $RevisionCleanup)) {
+        if (
+            ((! isset($this->revisionEnabled) || $this->revisionEnabled) && $this->updating)
+            && (! $limitReached || $revisionCleanup))
+        {
             // if it does, it means we're updating
 
             $changesToRecord = $this->changedRevisionableFields();
@@ -189,7 +193,7 @@ trait RevisionableTrait
             }
 
             if (count($revisions) > 0) {
-                if ($LimitReached && $RevisionCleanup) {
+                if ($limitReached && $revisionCleanup) {
                     $toDelete = $this->revisionHistory()->orderBy('id', 'asc')->limit(count($revisions))->get();
                     foreach ($toDelete as $delete) {
                         $delete->delete();
