@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php"
-         backupGlobals="false"
+<phpunit backupGlobals="false"
          backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
          colors="true"
-         verbose="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false">
-    <testsuites>
-        <testsuite name="Revisionable Test Suite">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
+         stopOnFailure="false"
+         syntaxCheck="false"
+         verbose="true"
+>
+    <testsuite name="Convênia Revisionable Test Suite">
+        <directory suffix=".php">./tests</directory>
+    </testsuite>
     <filter>
         <whitelist>
-            <directory suffix=".php">src/</directory>
+            <directory suffix=".php">./src/</directory>
         </whitelist>
     </filter>
     <logging>

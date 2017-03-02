@@ -383,14 +383,14 @@ trait RevisionableTrait
      */
     public function identifiableName()
     {
-        $expectedFields = [
+        $displayFields = [
             'name',
             'title',
         ];
 
-        foreach ($expectedFields as $expectedField) {
-            if ($this->getAttribute($expectedField) !== null) {
-                return $this->getAttribute($expectedField);
+        foreach ($displayFields as $displayField) {
+            if ($this->getAttribute($displayField) !== null) {
+                return $this->getAttribute($displayField);
             }
         }
 

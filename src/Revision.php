@@ -42,7 +42,7 @@ class Revision extends Eloquent
      */
     public function revisionable()
     {
-        return $this->morphTo();
+        return $this->morph1To();
     }
 
     /**
@@ -128,6 +128,7 @@ class Revision extends Eloquent
 
         // First find the main model that was updated
         $main_model = $this->revisionable_type;
+
         // Load it, WITH the related model
         if (class_exists($main_model)) {
             $main_model = new $main_model;
@@ -154,6 +155,7 @@ class Revision extends Eloquent
 
                         return $item->getRevisionNullString();
                     }
+
                     if (! $item) {
                         $item = new $related_class;
 
@@ -162,6 +164,7 @@ class Revision extends Eloquent
 
                     // see if there's an available mutator
                     $mutator = 'get'.studly_case($this->key).'Attribute';
+
                     if (method_exists($item, $mutator)) {
                         return $this->format($item->$mutator($this->key), $item->identifiableName());
                     }
