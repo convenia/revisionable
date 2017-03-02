@@ -8,6 +8,7 @@ namespace Convenia\Revisionable;
  * (c) Venture Craft <http://www.venturecraft.com.au>
  *
  */
+use Carbon\Carbon;
 
 /**
  * Class RevisionableTrait.
@@ -169,11 +170,11 @@ trait RevisionableTrait
         if (((! isset($this->revisionEnabled) || $this->revisionEnabled) && $this->updating) && (! $LimitReached || $RevisionCleanup)) {
             // if it does, it means we're updating
 
-            $changes_to_record = $this->changedRevisionableFields();
+            $changesToRecord = $this->changedRevisionableFields();
 
             $revisions = [];
 
-            foreach ($changes_to_record as $key => $change) {
+            foreach ($changesToRecord as $key => $change) {
                 $revisions[] = [
                     'revisionable_type' => $this->getMorphClass(),
                     'revisionable_id' => $this->getKey(),
@@ -182,8 +183,8 @@ trait RevisionableTrait
                     'old_value' => array_get($this->originalData, $key),
                     'new_value' => $this->updatedData[$key],
                     'user_id' => $this->getSystemUserId(),
-                    'created_at' => new \DateTime(),
-                    'updated_at' => new \DateTime(),
+                    'created_at' => new Carbon,
+                    'updated_at' => new Carbon,
                 ];
             }
 
@@ -223,8 +224,8 @@ trait RevisionableTrait
                 'new_value' => $this->{self::CREATED_AT},
                 'owner_id' => $this->getOwnerId(),
                 'user_id' => $this->getSystemUserId(),
-                'created_at' => new \DateTime(),
-                'updated_at' => new \DateTime(),
+                'created_at' => new Carbon,
+                'updated_at' => new Carbon,
             ];
 
             $revision = new Revision;
@@ -250,8 +251,8 @@ trait RevisionableTrait
                 'owner_id' => $this->getOwnerId(),
                 'new_value' => $this->{$this->getDeletedAtColumn()},
                 'user_id' => $this->getSystemUserId(),
-                'created_at' => new \DateTime(),
-                'updated_at' => new \DateTime(),
+                'created_at' => new Carbon,
+                'updated_at' => new Carbon,
             ];
             $revision = new \Convenia\Revisionable\Revision;
             \DB::table($revision->getTable())->insert($revisions);
@@ -381,7 +382,7 @@ trait RevisionableTrait
     {
         $expectedFields = [
             'name',
-            'title'
+            'title',
         ];
 
         foreach ($expectedFields as $expectedField) {

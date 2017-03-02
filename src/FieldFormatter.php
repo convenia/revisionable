@@ -2,13 +2,15 @@
 
 namespace Convenia\Revisionable;
 
-/**
+/*
  * FieldFormatter.
  *
  * Allows formatting of fields
  *
  * (c) Venture Craft <http://www.venturecraft.com.au>
  */
+
+use Carbon\Carbon;
 
 /**
  * Class FieldFormatter.
@@ -104,7 +106,7 @@ class FieldFormatter
      * @param string $value
      * @param string $format
      *
-     * @return formatted datetime
+     * @return Carbon formatted datetime
      */
     public static function datetime($value, $format = 'Y-m-d H:i:s')
     {
@@ -112,7 +114,7 @@ class FieldFormatter
             return;
         }
 
-        $datetime = new \DateTime($value);
+        $datetime = new Carbon($value);
 
         return $datetime->format($format);
     }
