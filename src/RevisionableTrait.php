@@ -166,12 +166,11 @@ trait RevisionableTrait
         if (isset($this->revisionCleanup)) {
             $revisionCleanup = $this->revisionCleanup;
         }
-        
+
         // check if the model already exists
         if (
             ((! isset($this->revisionEnabled) || $this->revisionEnabled) && $this->updating)
-            && (! $limitReached || $revisionCleanup))
-        {
+            && (! $limitReached || $revisionCleanup)) {
             // if it does, it means we're updating
 
             $changesToRecord = $this->changedRevisionableFields();

@@ -221,7 +221,7 @@ class Revision extends Eloquent
     /**
      * User Responsible.
      *
-     * @return User|boolean user responsible for the change
+     * @return User|bool user responsible for the change
      */
     public function userResponsible()
     {

@@ -36,6 +36,11 @@
             "Convenia\\Revisionable\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Convenia\\Revisionable\\Test\\": "tests"
+        }
+    },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true
