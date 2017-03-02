@@ -9,6 +9,15 @@
 composer require convenia/revisionable:^2.0
 ```
 
+Next, you must install the service provider:
+
+```php
+// config/app.php
+'providers' => [
+    ...
+    Convenia\Revisionable\RevisionableServiceProvider::class,
+];
+```
 You can publish the migration with:
 
 ```
