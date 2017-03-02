@@ -123,7 +123,7 @@ trait RevisionableTrait
             // we can only safely compare basic items,
             // so for now we drop any object based items, like DateTime
             foreach ($this->updatedData as $key => $val) {
-                if (gettype($val) == 'object' && ! method_exists($val, '__toString')) {
+                if (is_object($val) && ! method_exists($val, '__toString')) {
                     unset($this->originalData[$key]);
                     unset($this->updatedData[$key]);
                     array_push($this->dontKeep, $key);
@@ -184,7 +184,7 @@ trait RevisionableTrait
                     'key' => $key,
                     'owner_id' => $this->getOwnerId(),
                     'old_value' => array_get($this->originalData, $key),
-                    'new_value' => $this->updatedData[$key],
+                    'new_value' => array_get($this->updatedData, $key),
                     'user_id' => $this->getSystemUserId(),
                     'created_at' => new Carbon,
                     'updated_at' => new Carbon,
