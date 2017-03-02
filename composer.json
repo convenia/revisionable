@@ -30,7 +30,7 @@
         "codacy/coverage": "^1.0",
         "mockery/mockery": "^0.9.4",
         "orchestra/testbench": "~3.4.0",
-        "phpunit/phpunit": "^5.0|^6.0"
+        "phpunit/phpunit": "^4|^5|^6"
     },
     "autoload": {
         "psr-4": {
