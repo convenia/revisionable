@@ -5,7 +5,7 @@ namespace Convenia\Revisionable;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Class RevisionableServiceProvider
+ * Class RevisionableServiceProvider.
  */
 class RevisionableServiceProvider extends ServiceProvider
 {

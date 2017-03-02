@@ -379,6 +379,17 @@ trait RevisionableTrait
      */
     public function identifiableName()
     {
+        $expectedFields = [
+            'name',
+            'title'
+        ];
+
+        foreach ($expectedFields as $expectedField) {
+            if ($this->getAttribute($expectedField) !== null) {
+                return $this->getAttribute($expectedField);
+            }
+        }
+
         return $this->getKey();
     }
 
@@ -445,6 +456,6 @@ trait RevisionableTrait
             return $model->{$field};
         }
 
-        return null;
+        return;
     }
 }
