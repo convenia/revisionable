@@ -289,13 +289,13 @@ trait RevisionableTrait
      */
     private function changedRevisionableFields()
     {
-        $changes_to_record = [];
+        $changesToRecord = [];
         foreach ($this->dirtyData as $key => $value) {
             // check that the field is revisionable, and double check
             // that it's actually new data in case dirty is, well, clean
             if ($this->isRevisionable($key) && ! is_array($value)) {
                 if (! isset($this->originalData[$key]) || $this->originalData[$key] != $this->updatedData[$key]) {
-                    $changes_to_record[$key] = $value;
+                    $changesToRecord[$key] = $value;
                 }
             } else {
                 // we don't need these any more, and they could
@@ -305,7 +305,7 @@ trait RevisionableTrait
             }
         }
 
-        return $changes_to_record;
+        return $changesToRecord;
     }
 
     /**
@@ -435,8 +435,8 @@ trait RevisionableTrait
             $this->dontKeepRevisionOf = [];
         }
         if (is_array($field)) {
-            foreach ($field as $one_field) {
-                $this->disableRevisionField($one_field);
+            foreach ($field as $fieldArrayValue) {
+                $this->disableRevisionField($fieldArrayValue);
             }
         } else {
             $donts = $this->dontKeepRevisionOf;

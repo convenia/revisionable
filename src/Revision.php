@@ -75,9 +75,9 @@ class Revision extends Eloquent
      */
     private function formatFieldName($key)
     {
-        $related_model = $this->revisionable_type;
-        $related_model = new $related_model;
-        $revisionFormattedFieldNames = $related_model->getRevisionFormattedFieldNames();
+        $relatedModel = $this->revisionable_type;
+        $relatedModel = new $relatedModel;
+        $revisionFormattedFieldNames = $relatedModel->getRevisionFormattedFieldNames();
 
         if (isset($revisionFormattedFieldNames[$key])) {
             return $revisionFormattedFieldNames[$key];
@@ -122,7 +122,7 @@ class Revision extends Eloquent
      */
     private function getValue($which = 'new')
     {
-        $which_value = $which.'_value';
+        $whichValue = $which.'_value';
 
         // First find the main model that was updated
         $main_model = $this->revisionable_type;
@@ -145,9 +145,9 @@ class Revision extends Eloquent
 
                     // Finally, now that we know the namespace of the related model
                     // we can load it, to find the information we so desire
-                    $item = $related_class::find($this->$which_value);
+                    $item = $related_class::find($this->$whichValue);
 
-                    if (is_null($this->$which_value) || $this->$which_value == '') {
+                    if (is_null($this->$whichValue) || $this->$whichValue == '') {
                         $item = new $related_class;
 
                         return $item->getRevisionNullString();
@@ -177,11 +177,11 @@ class Revision extends Eloquent
 
             $mutator = 'get'.studly_case($this->key).'Attribute';
             if (method_exists($main_model, $mutator)) {
-                return $this->format($this->key, $main_model->$mutator($this->$which_value));
+                return $this->format($this->key, $main_model->$mutator($this->$whichValue));
             }
         }
 
-        return $this->format($this->key, $this->$which_value);
+        return $this->format($this->key, $this->$whichValue);
     }
 
     /**
