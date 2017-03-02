@@ -57,9 +57,9 @@ class FieldFormatter
      */
     public static function isEmpty($value, $options = [])
     {
-        $value_set = isset($value) && $value != '';
+        $valueBool = isset($value) && $value != '';
 
-        return sprintf(self::boolean($value_set, $options), $value);
+        return sprintf(self::boolean($valueBool, $options), $value);
     }
 
     /**
@@ -106,7 +106,7 @@ class FieldFormatter
      * @param string $value
      * @param string $format
      *
-     * @return Carbon formatted datetime
+     * @return string|null formatted datetime
      */
     public static function datetime($value, $format = 'Y-m-d H:i:s')
     {
@@ -114,8 +114,6 @@ class FieldFormatter
             return;
         }
 
-        $datetime = new Carbon($value);
-
-        return $datetime->format($format);
+        return (new Carbon($value))->format($format);
     }
 }
