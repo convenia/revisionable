@@ -57,11 +57,13 @@ class Revision extends Eloquent
     {
         if ($formatted = $this->formatFieldName($this->key)) {
             return $formatted;
-        } elseif (strpos($this->key, '_id')) {
-            return str_replace('_id', '', $this->key);
-        } else {
-            return $this->key;
         }
+
+        if (strpos($this->key, '_id')) {
+            return str_replace('_id', '', $this->key);
+        }
+
+        return $this->key;
     }
 
     /**
@@ -219,32 +221,34 @@ class Revision extends Eloquent
     /**
      * User Responsible.
      *
-     * @return User user responsible for the change
+     * @return User|boolean user responsible for the change
      */
     public function userResponsible()
     {
         if (empty($this->user_id)) {
             return false;
         }
+
         if (class_exists($class = '\Cartalyst\Sentry\Facades\Laravel\Sentry')
             || class_exists($class = '\Cartalyst\Sentinel\Laravel\Facades\Sentinel')
         ) {
             return $class::findUserById($this->user_id);
-        } else {
-            $user_model = app('config')->get('auth.model');
+        }
 
-            if (empty($user_model)) {
-                $user_model = app('config')->get('auth.providers.users.model');
-                if (empty($user_model)) {
-                    return false;
-                }
-            }
-            if (! class_exists($user_model)) {
+        $userModel = app('config')->get('auth.model');
+
+        if (empty($userModel)) {
+            $userModel = app('config')->get('auth.providers.users.model');
+            if (empty($userModel)) {
                 return false;
             }
-
-            return $user_model::find($this->user_id);
         }
+
+        if (! class_exists($userModel)) {
+            return false;
+        }
+
+        return $userModel::find($this->user_id);
     }
 
     /**
@@ -284,8 +288,8 @@ class Revision extends Eloquent
 
         if (isset($revisionFormattedFields[$key])) {
             return FieldFormatter::format($key, $value, $revisionFormattedFields);
-        } else {
-            return $value;
         }
+
+        return $value;
     }
 }

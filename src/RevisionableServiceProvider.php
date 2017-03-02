@@ -13,7 +13,8 @@ class RevisionableServiceProvider extends ServiceProvider
     {
         foreach ($this->getMigrations() as $migration) {
             $this->publishes([
-                __DIR__.'/../database/migrations/'.$migration.'.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_'.$migration.'.php'),
+                __DIR__.'/../database/migrations/'
+                .$migration.'.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_'.$migration.'.php'),
             ], 'migrations');
         }
     }
