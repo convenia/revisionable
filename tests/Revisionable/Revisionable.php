@@ -1,6 +1,7 @@
 <?php
 namespace Convenia\Revisionable\Test\Revisionable;
 
+use Carbon\Carbon;
 use Convenia\Revisionable\Test\TestCase;
 use Illuminate\Support\Collection;
 
@@ -37,6 +38,16 @@ class RevisionableTest extends TestCase
     public function test_revision_is_disabled()
     {
         $this->testModelWithRevisionDisabled->name = 'Changed';
+        $this->testModelWithRevisionDisabled->save();
+
+        $revisions = $this->testModelWithRevisionDisabled->revisionHistory;
+
+        $this->assertCount(0, $revisions);
+    }
+
+    public function test_formatted_revision()
+    {
+        $this->testModelWithRevisionDisabled->birth_date = new Carbon('1985-08-01');
         $this->testModelWithRevisionDisabled->save();
 
         $revisions = $this->testModelWithRevisionDisabled->revisionHistory;
