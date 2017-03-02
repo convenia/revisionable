@@ -44,15 +44,4 @@ class RevisionableTest extends TestCase
 
         $this->assertCount(0, $revisions);
     }
-
-    public function test_formatted_revision()
-    {
-        $this->testModelWithRevisionDisabled->birth_date = new Carbon('1985-08-01');
-        $this->testModelWithRevisionDisabled->save();
-
-        $revisions = $this->testModelWithRevisionDisabled->revisionHistory;
-
-        $this->assertCount(0, $revisions);
-    }
-
 }
