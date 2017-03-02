@@ -1,5 +1,6 @@
 <img src="http://venturecraft.com.au/wp-content/uploads/2015/09/REVISIONABLE.png" style="width: 100%" alt="Revisionable" />
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f9140cd44e2247958cfcd1a9045b799c)](https://www.codacy.com/app/Convenia/revisionable?utm_source=github.com&utm_medium=referral&utm_content=convenia/revisionable&utm_campaign=badger)
 [![Laravel 4.x](https://img.shields.io/badge/Laravel-4.x-brightgreen.svg?style=flat-square)](http://laravel.com)
 [![Laravel 5.2](https://img.shields.io/badge/Laravel-5.x-brightgreen.svg?style=flat-square)](http://laravel.com)
 [![Latest Version](https://img.shields.io/github/release/venturecraft/revisionable.svg?style=flat-square)](https://packagist.org/packages/venturecraft/revisionable)
