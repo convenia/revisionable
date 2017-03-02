@@ -29,7 +29,7 @@
     "require-dev": {
         "codacy/coverage": "^1.0",
         "mockery/mockery": "^0.9.4",
-        "orchestra/testbench": "~3.2|~3.3|~3.4",
+        "orchestra/testbench": "~3.0",
         "phpunit/phpunit": "^4|^5|^6"
     },
     "autoload": {
