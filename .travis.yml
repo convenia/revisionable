@@ -20,7 +20,7 @@ notifications:
         - "phpunit -v --coverage-text --colors=never --stderr"
 
 after_success:
-    - php vendor/bin/codacycoverage clover path/to/clover.xml
+    - php vendor/bin/codacycoverage clover build/logs/clover.xml
 
 addons:
     code_climate:
