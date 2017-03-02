@@ -30,7 +30,7 @@ class FieldFormatter
     {
         foreach ($formats as $pkey => $format) {
             $parts = explode(':', $format);
-            if (sizeof($parts) === 1) {
+            if (count($parts) === 1) {
                 continue;
             }
 
@@ -76,11 +76,11 @@ class FieldFormatter
             $options = explode('|', $options);
         }
 
-        if (sizeof($options) != 2) {
+        if (count($options) != 2) {
             $options = ['No', 'Yes'];
         }
 
-        return $options[! ! $value];
+        return $options[(bool) $value];
     }
 
     /**

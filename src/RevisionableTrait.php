@@ -281,8 +281,6 @@ trait RevisionableTrait
         } catch (\Exception $e) {
             return;
         }
-
-        return;
     }
 
     /**
@@ -459,7 +457,5 @@ trait RevisionableTrait
         if (isset($model->{$field})) {
             return $model->{$field};
         }
-
-        return;
     }
 }

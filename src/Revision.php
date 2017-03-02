@@ -2,8 +2,8 @@
 
 namespace Convenia\Revisionable;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Revision.
@@ -257,7 +257,7 @@ class Revision extends Eloquent
     /**
      * Returns the object we have the history of.
      *
-     * @return Object|false
+     * @return object|false
      */
     public function historyOf()
     {
@@ -275,6 +275,7 @@ class Revision extends Eloquent
         'minimum'  => 'string:Min: %s'
     )
      */
+
     /**
      * Format the value according to the $revisionFormattedFields array.
      *
