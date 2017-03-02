@@ -127,24 +127,24 @@ class Revision extends Eloquent
         $whichValue = $which.'_value';
 
         // First find the main model that was updated
-        $main_model = $this->revisionable_type;
+        $mainModel = $this->revisionable_type;
 
         // Load it, WITH the related model
-        if (class_exists($main_model)) {
-            $main_model = new $main_model;
+        if (class_exists($mainModel)) {
+            $mainModel = new $mainModel;
 
             try {
                 if ($this->isRelated()) {
                     $related_model = $this->getRelatedModel();
 
                     // Now we can find out the namespace of of related model
-                    if (! method_exists($main_model, $related_model)) {
+                    if (! method_exists($mainModel, $related_model)) {
                         $related_model = camel_case($related_model); // for cases like published_status_id
-                        if (! method_exists($main_model, $related_model)) {
-                            throw new \Exception('Relation '.$related_model.' does not exist for '.$main_model);
+                        if (! method_exists($mainModel, $related_model)) {
+                            throw new \Exception('Relation '.$related_model.' does not exist for '.$mainModel);
                         }
                     }
-                    $related_class = $main_model->$related_model()->getRelated();
+                    $related_class = $mainModel->$related_model()->getRelated();
 
                     // Finally, now that we know the namespace of the related model
                     // we can load it, to find the information we so desire
@@ -181,8 +181,8 @@ class Revision extends Eloquent
             // or, if it's a normal value
 
             $mutator = 'get'.studly_case($this->key).'Attribute';
-            if (method_exists($main_model, $mutator)) {
-                return $this->format($this->key, $main_model->$mutator($this->$whichValue));
+            if (method_exists($mainModel, $mutator)) {
+                return $this->format($this->key, $mainModel->$mutator($this->$whichValue));
             }
         }
 
