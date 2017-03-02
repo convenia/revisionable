@@ -6,8 +6,18 @@
 #### Via [composer](http://getcomposer.org/doc/00-intro.md) (recommended)
 
 ```
-composer require "convenia/revisionable:^2.0"
+composer require convenia/revisionable:^2.0
 ```
+
+You can publish the migration with:
+
+```
+php artisan vendor:publish --provider="Convenia\Revisionable\RevisionableServiceProvider" --tag="migrations"
+```
+
+After the migration has been published you can create the revisions table by running the migrations:
+
+```php artisan migrate```
 
 ## Contributing
 
