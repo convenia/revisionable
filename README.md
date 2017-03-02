@@ -22,7 +22,7 @@ And you're good to go!
 ---
 
 We have badges! 
-[![Build Status](https://travis-ci.org/convenia/revisionable.svg?branch=master)](https://travis-ci.org/convenia/revisionable) [![StyleCI](https://styleci.io/repos/79227873/shield?branch=master)](https://styleci.io/repos/79227873) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f9140cd44e2247958cfcd1a9045b799c)](https://www.codacy.com/app/Convenia/revisionable?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=convenia/revisionable&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/convenia/revisionable.svg?branch=master)](https://travis-ci.org/convenia/revisionable) [![StyleCI](https://styleci.io/repos/83733995/shield?branch=master)](https://styleci.io/repos/83733995) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f9140cd44e2247958cfcd1a9045b799c)](https://www.codacy.com/app/Convenia/revisionable?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=convenia/revisionable&amp;utm_campaign=Badge_Grade)
 
 ---
 
