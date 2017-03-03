@@ -10,12 +10,17 @@ namespace Convenia\Revisionable;
  */
 use Auth;
 use Carbon\Carbon;
+use Convenia\Revisionable\Revision;
+use Exception;
+use Illuminate\Support\Collection;
 
 /**
  * Class RevisionableTrait.
  */
 trait RevisionableTrait
 {
+    use HelpersTrait;
+
     /**
      * @var array
      */
@@ -47,6 +52,8 @@ trait RevisionableTrait
      * @var array
      */
     protected $dirtyData = [];
+
+    protected $revisionParentId = null;
 
     /**
      * Ensure that the bootRevisionableTrait is called only
@@ -92,7 +99,17 @@ trait RevisionableTrait
      */
     public function revisionHistory()
     {
-        return $this->morphMany('\Convenia\Revisionable\Revision', 'revisionable');
+        return $this->morphMany(Revision::class, 'revisionable');
+    }
+
+    /**
+     * @return Collection
+     */
+    public static function revisionChildHistory()
+    {
+        return Revision::where('revisionable_parent', get_called_class())
+            ->where('revisionable_parent_id', $this->getKey())
+            ->orderBy('updated_at', $order)->limit($limit)->get();
     }
 
     /**
@@ -100,11 +117,11 @@ trait RevisionableTrait
      *
      * @param int $limit
      * @param string $order
-     * @return mixed
+     * @return Collection
      */
     public static function classRevisionHistory($limit = 100, $order = 'desc')
     {
-        return \Convenia\Revisionable\Revision::where('revisionable_type', get_called_class())
+        return Revision::where('revisionable_type', get_called_class())
             ->orderBy('updated_at', $order)->limit($limit)->get();
     }
 
@@ -146,6 +163,16 @@ trait RevisionableTrait
 
             $this->dirtyData = $this->getDirty();
             $this->updating = $this->exists;
+
+            try {
+
+                if ($this->{$this->revisionParent}->id !== null) {
+                    $this->revisionParentId = $this->{$this->revisionParent}->getKey();
+                }
+
+            } catch (Exception $e) {
+
+            }
         }
     }
 
@@ -171,7 +198,8 @@ trait RevisionableTrait
         // check if the model already exists
         if (
             ((! isset($this->revisionEnabled) || $this->revisionEnabled) && $this->updating)
-            && (! $limitReached || $revisionCleanup)) {
+            && (! $limitReached || $revisionCleanup)
+        ) {
             // if it does, it means we're updating
 
             $changesToRecord = $this->changedRevisionableFields();
@@ -186,6 +214,8 @@ trait RevisionableTrait
                     'old_value' => array_get($this->originalData, $key),
                     'new_value' => array_get($this->updatedData, $key),
                     'user_id' => $this->getSystemUserId(),
+                    'revisionable_parent' => $this->getRevisionableParentClass(),
+                    'revisionable_parent_id' => $this->revisionParentId,
                     'created_at' => new Carbon,
                     'updated_at' => new Carbon,
                 ];
@@ -210,7 +240,6 @@ trait RevisionableTrait
      */
     public function postCreate()
     {
-
         // Check if we should store creations in our revision history
         // Set this value to true in your model if you want to
         if (empty($this->revisionCreationsEnabled)) {
@@ -227,6 +256,8 @@ trait RevisionableTrait
                 'new_value' => $this->{self::CREATED_AT},
                 'owner_id' => $this->getOwnerId(),
                 'user_id' => $this->getSystemUserId(),
+                'revisionable_parent' => $this->getRevisionableParentClass(),
+                'revisionable_parent_id' => $this->revisionParentId,
                 'created_at' => new Carbon,
                 'updated_at' => new Carbon,
             ];
@@ -254,17 +285,19 @@ trait RevisionableTrait
                 'owner_id' => $this->getOwnerId(),
                 'new_value' => $this->{$this->getDeletedAtColumn()},
                 'user_id' => $this->getSystemUserId(),
+                'revisionable_parent' => $this->getRevisionableParentClass(),
+                'revisionable_parent_id' => $this->revisionParentId,
                 'created_at' => new Carbon,
                 'updated_at' => new Carbon,
             ];
-            $revision = new \Convenia\Revisionable\Revision;
+            $revision = new Revision;
             \DB::table($revision->getTable())->insert($revisions);
             \Event::fire('revisionable.deleted', ['model' => $this, 'revisions' => $revisions]);
         }
     }
 
     /**
-     * Attempt to find the user id of the currently logged in user
+     * Attempt to find the user id of the currently logged in user.
      **/
     public function getSystemUserId()
     {
@@ -272,8 +305,8 @@ trait RevisionableTrait
             if (Auth::check()) {
                 return Auth::user()->getAuthIdentifier();
             }
-        } catch (\Exception $e) {
-            return null;
+        } catch (Exception $e) {
+            return;
         }
     }
 
@@ -440,5 +473,19 @@ trait RevisionableTrait
             $this->dontKeepRevisionOf = $donts;
             unset($donts);
         }
+    }
+
+    /**
+     * Return the parent class.
+     *
+     * @return string
+     */
+    protected function getRevisionableParentClass()
+    {
+        if (method_exists($this, $this->revisionParent)) {
+            return get_class($this->{$this->revisionParent}()->getRelated());
+        }
+
+        return false;
     }
 }

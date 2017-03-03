@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class Revision extends Eloquent
 {
+    use HelpersTrait;
+
     /**
      * @var string
      */
@@ -75,7 +77,7 @@ class Revision extends Eloquent
      *
      * @return bool
      */
-    private function formatFieldName($key)
+    protected function formatFieldName($key)
     {
         $relatedModel = $this->revisionable_type;
         $relatedModel = new $relatedModel;
@@ -122,7 +124,7 @@ class Revision extends Eloquent
      *
      * @return string value
      */
-    private function getValue($which = 'new')
+    protected function getValue($which = 'new')
     {
         $whichValue = $which.'_value';
 
@@ -134,8 +136,8 @@ class Revision extends Eloquent
             $mainModel = new $mainModel;
 
             try {
-                if ($this->isRelated()) {
-                    $related_model = $this->getRelatedModel();
+                if ($this->isRelated($this->key)) {
+                    $related_model = $this->getRelatedModel($this->key);
 
                     // Now we can find out the namespace of the related model
                     if (! method_exists($mainModel, $related_model)) {
@@ -188,38 +190,6 @@ class Revision extends Eloquent
         }
 
         return $this->format($this->key, $this->$whichValue);
-    }
-
-    /**
-     * Return true if the key is for a related model.
-     *
-     * @return bool
-     */
-    private function isRelated()
-    {
-        $isRelated = false;
-        $idSuffix = '_id';
-        $pos = strrpos($this->key, $idSuffix);
-
-        if ($pos !== false
-            && strlen($this->key) - strlen($idSuffix) === $pos
-        ) {
-            $isRelated = true;
-        }
-
-        return $isRelated;
-    }
-
-    /**
-     * Return the name of the related model.
-     *
-     * @return string
-     */
-    private function getRelatedModel()
-    {
-        $idSuffix = '_id';
-
-        return substr($this->key, 0, strlen($this->key) - strlen($idSuffix));
     }
 
     /**
