@@ -19,11 +19,6 @@ trait RevisionableTrait
     /**
      * @var array
      */
-    protected $revisionFormattedFieldNames;
-
-    /**
-     * @var array
-     */
     protected $originalData = [];
 
     /**
