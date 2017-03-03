@@ -20,7 +20,8 @@ class CreateRevisionsTable extends Migration
             $table->string('key');
             $table->text('old_value')->nullable();
             $table->text('new_value')->nullable();
-            $table->integer('owner_id')->nullable();
+            $table->string('revisionable_parent')->nullable();
+            $table->integer('revisionable_parent_id')->nullable();
             $table->timestamps();
 
             $table->index(array('revisionable_id', 'revisionable_type'));

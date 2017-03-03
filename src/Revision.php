@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  */
 class Revision extends Eloquent
 {
+    use HelpersTrait;
+
     /**
      * @var string
      */
@@ -42,7 +44,7 @@ class Revision extends Eloquent
      */
     public function revisionable()
     {
-        return $this->morph1To();
+        return $this->morphTo();
     }
 
     /**
@@ -75,7 +77,7 @@ class Revision extends Eloquent
      *
      * @return bool
      */
-    private function formatFieldName($key)
+    protected function formatFieldName($key)
     {
         $relatedModel = $this->revisionable_type;
         $relatedModel = new $relatedModel;
@@ -122,29 +124,30 @@ class Revision extends Eloquent
      *
      * @return string value
      */
-    private function getValue($which = 'new')
+    protected function getValue($which = 'new')
     {
         $whichValue = $which.'_value';
 
         // First find the main model that was updated
-        $main_model = $this->revisionable_type;
+        $mainModel = $this->revisionable_type;
 
         // Load it, WITH the related model
-        if (class_exists($main_model)) {
-            $main_model = new $main_model;
+        if (class_exists($mainModel)) {
+            $mainModel = new $mainModel;
 
             try {
-                if ($this->isRelated()) {
-                    $related_model = $this->getRelatedModel();
+                if ($this->isRelated($this->key)) {
+                    $related_model = $this->getRelatedModel($this->key);
 
-                    // Now we can find out the namespace of of related model
-                    if (! method_exists($main_model, $related_model)) {
+                    // Now we can find out the namespace of the related model
+                    if (! method_exists($mainModel, $related_model)) {
                         $related_model = camel_case($related_model); // for cases like published_status_id
-                        if (! method_exists($main_model, $related_model)) {
-                            throw new \Exception('Relation '.$related_model.' does not exist for '.$main_model);
+                        if (! method_exists($mainModel, $related_model)) {
+                            throw new \Exception('Relation '.$related_model.' does not exist for '.$mainModel);
                         }
                     }
-                    $related_class = $main_model->$related_model()->getRelated();
+
+                    $related_class = $mainModel->$related_model()->getRelated();
 
                     // Finally, now that we know the namespace of the related model
                     // we can load it, to find the information we so desire
@@ -181,44 +184,12 @@ class Revision extends Eloquent
             // or, if it's a normal value
 
             $mutator = 'get'.studly_case($this->key).'Attribute';
-            if (method_exists($main_model, $mutator)) {
-                return $this->format($this->key, $main_model->$mutator($this->$whichValue));
+            if (method_exists($mainModel, $mutator)) {
+                return $this->format($this->key, $mainModel->$mutator($this->$whichValue));
             }
         }
 
         return $this->format($this->key, $this->$whichValue);
-    }
-
-    /**
-     * Return true if the key is for a related model.
-     *
-     * @return bool
-     */
-    private function isRelated()
-    {
-        $isRelated = false;
-        $idSuffix = '_id';
-        $pos = strrpos($this->key, $idSuffix);
-
-        if ($pos !== false
-            && strlen($this->key) - strlen($idSuffix) === $pos
-        ) {
-            $isRelated = true;
-        }
-
-        return $isRelated;
-    }
-
-    /**
-     * Return the name of the related model.
-     *
-     * @return string
-     */
-    private function getRelatedModel()
-    {
-        $idSuffix = '_id';
-
-        return substr($this->key, 0, strlen($this->key) - strlen($idSuffix));
     }
 
     /**

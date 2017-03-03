@@ -1,14 +1,10 @@
 {
     "name": "convenia/revisionable",
     "license": "MIT",
-    "description": "Keep a revision history for your models without thinking, created as a package for use with Laravel",
+    "description": "Keep a revision history for your eloquent models without thinking",
     "keywords": ["model", "laravel", "revision", "history"],
     "homepage": "http://github.com/convenia/revisionable",
-    "authors": [
-        {
-            "name": "Chris Duell",
-            "email": "me@chrisduell.com"
-        },
+    "authors": [        
         {
             "name": "Victor Ventura",
             "email": "euventura@gmail.com"
