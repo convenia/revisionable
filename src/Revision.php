@@ -42,7 +42,7 @@ class Revision extends Eloquent
      */
     public function revisionable()
     {
-        return $this->morph1To();
+        return $this->morphTo();
     }
 
     /**
@@ -137,13 +137,14 @@ class Revision extends Eloquent
                 if ($this->isRelated()) {
                     $related_model = $this->getRelatedModel();
 
-                    // Now we can find out the namespace of of related model
+                    // Now we can find out the namespace of the related model
                     if (! method_exists($mainModel, $related_model)) {
                         $related_model = camel_case($related_model); // for cases like published_status_id
                         if (! method_exists($mainModel, $related_model)) {
                             throw new \Exception('Relation '.$related_model.' does not exist for '.$mainModel);
                         }
                     }
+
                     $related_class = $mainModel->$related_model()->getRelated();
 
                     // Finally, now that we know the namespace of the related model

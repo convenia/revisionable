@@ -8,6 +8,7 @@ namespace Convenia\Revisionable;
  * (c) Venture Craft <http://www.venturecraft.com.au>
  *
  */
+use Auth;
 use Carbon\Carbon;
 
 /**
@@ -18,27 +19,32 @@ trait RevisionableTrait
     /**
      * @var array
      */
-    private $originalData = [];
+    protected $revisionFormattedFieldNames;
 
     /**
      * @var array
      */
-    private $updatedData = [];
+    protected $originalData = [];
+
+    /**
+     * @var array
+     */
+    protected $updatedData = [];
 
     /**
      * @var bool
      */
-    private $updating = false;
+    protected $updating = false;
 
     /**
      * @var array
      */
-    private $dontKeep = [];
+    protected $dontKeep = [];
 
     /**
      * @var array
      */
-    private $doKeep = [];
+    protected $doKeep = [];
 
     /**
      * Keeps the list of values that have been updated.
@@ -182,7 +188,6 @@ trait RevisionableTrait
                     'revisionable_type' => $this->getMorphClass(),
                     'revisionable_id' => $this->getKey(),
                     'key' => $key,
-                    'owner_id' => $this->getOwnerId(),
                     'old_value' => array_get($this->originalData, $key),
                     'new_value' => array_get($this->updatedData, $key),
                     'user_id' => $this->getSystemUserId(),
@@ -265,21 +270,15 @@ trait RevisionableTrait
 
     /**
      * Attempt to find the user id of the currently logged in user
-     * Supports Cartalyst Sentry/Sentinel based authentication, as well as stock Auth.
      **/
     public function getSystemUserId()
     {
         try {
-            if (class_exists($class = '\SleepingOwl\AdminAuth\Facades\AdminAuth')
-                || class_exists($class = '\Cartalyst\Sentry\Facades\Laravel\Sentry')
-                || class_exists($class = '\Cartalyst\Sentinel\Laravel\Facades\Sentinel')
-            ) {
-                return ($class::check()) ? $class::getUser()->id : null;
-            } elseif (\Auth::check()) {
-                return \Auth::user()->getAuthIdentifier();
+            if (Auth::check()) {
+                return Auth::user()->getAuthIdentifier();
             }
         } catch (\Exception $e) {
-            return;
+            return null;
         }
     }
 
@@ -289,7 +288,7 @@ trait RevisionableTrait
      *
      * @return array fields with new data, that should be recorded
      */
-    private function changedRevisionableFields()
+    protected function changedRevisionableFields()
     {
         $changesToRecord = [];
         foreach ($this->dirtyData as $key => $value) {
@@ -317,7 +316,7 @@ trait RevisionableTrait
      *
      * @return bool
      */
-    private function isRevisionable($key)
+    protected function isRevisionable($key)
     {
 
         // If the field is explicitly revisionable, then return true.
@@ -339,7 +338,7 @@ trait RevisionableTrait
      *
      * @return bool
      */
-    private function isSoftDelete()
+    protected function isSoftDelete()
     {
         // check flag variable used in laravel 4.2+
         if (isset($this->forceDeleting)) {
@@ -375,7 +374,7 @@ trait RevisionableTrait
      * When displaying revision history, when a foreign key is updated
      * instead of displaying the ID, you can choose to display a string
      * of your choice, just override this method in your model
-     * By default, it will fall back to the models ID.
+     * By default, it will fall back to the models 'name', 'title' fields, otherwise the ID.
      *
      * @return string an identifying name for the model
      */
@@ -445,17 +444,6 @@ trait RevisionableTrait
             $donts[] = $field;
             $this->dontKeepRevisionOf = $donts;
             unset($donts);
-        }
-    }
-
-    public function getOwnerId()
-    {
-        $field = env('REVISION_OWNER_FIELD', 'identity_id');
-
-        $model = app($this->getMorphClass())->find($this->getKey());
-
-        if (isset($model->{$field})) {
-            return $model->{$field};
         }
     }
 }
