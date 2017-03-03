@@ -10,7 +10,6 @@ namespace Convenia\Revisionable;
  */
 use Auth;
 use Carbon\Carbon;
-use Convenia\Revisionable\Revision;
 use Exception;
 use Illuminate\Support\Collection;
 
@@ -165,13 +164,10 @@ trait RevisionableTrait
             $this->updating = $this->exists;
 
             try {
-
                 if ($this->{$this->revisionParent}->id !== null) {
                     $this->revisionParentId = $this->{$this->revisionParent}->getKey();
                 }
-
             } catch (Exception $e) {
-
             }
         }
     }
@@ -463,11 +459,14 @@ trait RevisionableTrait
         if (! isset($this->dontKeepRevisionOf)) {
             $this->dontKeepRevisionOf = [];
         }
+
         if (is_array($field)) {
             foreach ($field as $fieldArrayValue) {
                 $this->disableRevisionField($fieldArrayValue);
             }
-        } else {
+        }
+
+        if (! is_array($field)) {
             $donts = $this->dontKeepRevisionOf;
             $donts[] = $field;
             $this->dontKeepRevisionOf = $donts;
