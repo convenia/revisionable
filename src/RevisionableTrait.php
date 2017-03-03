@@ -105,11 +105,11 @@ trait RevisionableTrait
     /**
      * @return Collection
      */
-    public static function revisionChildHistory()
+    public function revisionChildHistory()
     {
         return Revision::where('revisionable_parent', get_called_class())
             ->where('revisionable_parent_id', $this->getKey())
-            ->orderBy('updated_at', $order)->limit($limit)->get();
+            ->orderBy('updated_at', 'DESC')->get();
     }
 
     /**
