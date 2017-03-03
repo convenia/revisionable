@@ -137,17 +137,17 @@ class Revision extends Eloquent
 
             try {
                 if ($this->isRelated($this->key)) {
-                    $related_model = $this->getRelatedModel($this->key);
+                    $relatedModel = $this->getRelatedModel($this->key);
 
                     // Now we can find out the namespace of the related model
-                    if (! method_exists($mainModel, $related_model)) {
-                        $related_model = camel_case($related_model); // for cases like published_status_id
-                        if (! method_exists($mainModel, $related_model)) {
-                            throw new \Exception('Relation '.$related_model.' does not exist for '.$mainModel);
+                    if (! method_exists($mainModel, $relatedModel)) {
+                        $relatedModel = camel_case($relatedModel); // for cases like published_status_id
+                        if (! method_exists($mainModel, $relatedModel)) {
+                            throw new \Exception('Relation '.$relatedModel.' does not exist for '.$mainModel);
                         }
                     }
 
-                    $related_class = $mainModel->$related_model()->getRelated();
+                    $related_class = $mainModel->$relatedModel()->getRelated();
 
                     // Finally, now that we know the namespace of the related model
                     // we can load it, to find the information we so desire
@@ -257,9 +257,9 @@ class Revision extends Eloquent
      */
     public function format($key, $value)
     {
-        $related_model = $this->revisionable_type;
-        $related_model = new $related_model;
-        $revisionFormattedFields = $related_model->getRevisionFormattedFields();
+        $relatedModel = $this->revisionable_type;
+        $relatedModel = new $relatedModel;
+        $revisionFormattedFields = $relatedModel->getRevisionFormattedFields();
 
         if (isset($revisionFormattedFields[$key])) {
             return FieldFormatter::format($key, $value, $revisionFormattedFields);
