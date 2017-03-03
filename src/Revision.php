@@ -147,20 +147,20 @@ class Revision extends Eloquent
                         }
                     }
 
-                    $related_class = $mainModel->$relatedModel()->getRelated();
+                    $relatedClass = $mainModel->$relatedModel()->getRelated();
 
                     // Finally, now that we know the namespace of the related model
                     // we can load it, to find the information we so desire
-                    $item = $related_class::find($this->$whichValue);
+                    $item = $relatedClass::find($this->$whichValue);
 
                     if (is_null($this->$whichValue) || $this->$whichValue == '') {
-                        $item = new $related_class;
+                        $item = new $relatedClass;
 
                         return $item->getRevisionNullString();
                     }
 
                     if (! $item) {
-                        $item = new $related_class;
+                        $item = new $relatedClass;
 
                         return $this->format($this->key, $item->getRevisionUnknownString());
                     }
@@ -211,9 +211,9 @@ class Revision extends Eloquent
 
         $userModel = app('config')->get('auth.model');
 
-        if (empty($userModel)) {
+        if ($userModel === null) {
             $userModel = app('config')->get('auth.providers.users.model');
-            if (empty($userModel)) {
+            if ($userModel === null) {
                 return false;
             }
         }
