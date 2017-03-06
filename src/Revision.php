@@ -271,7 +271,7 @@ class Revision extends Eloquent
 		
 		protected function getModelidentifiableName($model)
 		{
-			if (! method_exists($model, 'identifiableName')) {
+			if (method_exists($model, 'identifiableName')) {
 				return $model->identifiableName();
 			}
 			
