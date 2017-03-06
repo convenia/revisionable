@@ -169,11 +169,12 @@ class Revision extends Eloquent
                     $mutator = 'get'.studly_case($this->key).'Attribute';
 
                     if (method_exists($item, $mutator)) {
-                        return $this->format($item->$mutator($this->key), $item->identifiableName());
+                        return $this->format($item->$mutator($this->key), $this->getModelidentifiableName($item));
                     }
 
-                    return $this->format($this->key, $item->identifiableName());
+                    return $this->format($this->key, $this->getModelidentifiableName($item));
                 }
+								
             } catch (\Exception $e) {
                 // Just a fail-safe, in the case the data setup isn't as expected
                 // Nothing to do here.
@@ -267,4 +268,13 @@ class Revision extends Eloquent
 
         return $value;
     }
+		
+		protected function getModelidentifiableName($model)
+		{
+			if (! method_exists($model, 'identifiableName')) {
+				return $model->identifiableName();
+			}
+			
+			return 'name';
+		}
 }
