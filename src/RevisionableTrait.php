@@ -9,8 +9,8 @@ namespace Convenia\Revisionable;
  *
  */
 use Auth;
-use Carbon\Carbon;
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 /**
