@@ -394,28 +394,12 @@ trait RevisionableTrait
     }
 
     /**
-     * Identifiable Name
-     * When displaying revision history, when a foreign key is updated
-     * instead of displaying the ID, you can choose to display a string
-     * of your choice, just override this method in your model
-     * By default, it will fall back to the models 'name', 'title' fields, otherwise the ID.
+     * Override this method in your model to return the identifiableName
      *
      * @return string an identifying name for the model
      */
     public function identifiableName()
-    {
-        $displayFields = [
-            'name',
-            'title',
-        ];
-
-        foreach ($displayFields as $displayField) {
-            if ($this->getAttribute($displayField) !== null) {
-                return $this->getAttribute($displayField);
-            }
-        }
-
-        return $this->getKey();
+    {        
     }
 
     /**

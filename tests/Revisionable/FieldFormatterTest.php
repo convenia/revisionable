@@ -18,5 +18,18 @@ class FieldFormatterTest extends TestCase
             $this->assertEquals('08/01/1985', $revision->newValue());
         });
     }
+    
+    public function test_boolean_format()
+    {
+        $this->testModel->status = 1;
+        $this->testModel->save();
+
+        $revisions = $this->testModel->revisionHistory;
+
+        $revisions->each(function ($revision) {
+            $this->assertEquals('active', $revision->newValue());
+            $this->assertEquals('inactive', $revision->oldValue());
+        });
+    }
 
 }
