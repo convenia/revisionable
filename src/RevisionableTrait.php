@@ -394,12 +394,12 @@ trait RevisionableTrait
     }
 
     /**
-     * Override this method in your model to return the identifiableName
+     * Override this method in your model to return the identifiableName.
      *
      * @return string an identifying name for the model
      */
     public function identifiableName()
-    {        
+    {
     }
 
     /**
