@@ -174,7 +174,6 @@ class Revision extends Eloquent
 
                     return $this->format($this->key, $this->getModelidentifiableName($item));
                 }
-								
             } catch (\Exception $e) {
                 // Just a fail-safe, in the case the data setup isn't as expected
                 // Nothing to do here.
@@ -268,33 +267,33 @@ class Revision extends Eloquent
 
         return $value;
     }
-		
-		/**
-     * Identifiable Name
-     * When displaying revision history, when a foreign key is updated
-     * instead of displaying the ID, you can choose to display a string
-     * of your choice, just override this method in your model
-     * By default, it will fall back to the models 'name' or 'title' fields, otherwise the ID.
-     *
-     * @return string an identifying name for the model
-     */
-		protected function getModelidentifiableName($model)
-		{
-			if (method_exists($model, 'identifiableName')) {
-				return $model->identifiableName();
-			}
-			
-			$displayFields = [
-					'name',
-					'title',
-			];
 
-			foreach ($displayFields as $displayField) {
-					if ($model->getAttribute($displayField) !== null) {
-							return $model->getAttribute($displayField);
-					}
-			}
+        /**
+         * Identifiable Name
+         * When displaying revision history, when a foreign key is updated
+         * instead of displaying the ID, you can choose to display a string
+         * of your choice, just override this method in your model
+         * By default, it will fall back to the models 'name' or 'title' fields, otherwise the ID.
+         *
+         * @return string an identifying name for the model
+         */
+        protected function getModelidentifiableName($model)
+        {
+            if (method_exists($model, 'identifiableName')) {
+                return $model->identifiableName();
+            }
 
-			return $model->getKey();			
-		}
+            $displayFields = [
+                    'name',
+                    'title',
+            ];
+
+            foreach ($displayFields as $displayField) {
+                if ($model->getAttribute($displayField) !== null) {
+                    return $model->getAttribute($displayField);
+                }
+            }
+
+            return $model->getKey();
+        }
 }

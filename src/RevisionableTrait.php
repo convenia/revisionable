@@ -250,7 +250,6 @@ trait RevisionableTrait
                 'key' => self::CREATED_AT,
                 'old_value' => null,
                 'new_value' => $this->{self::CREATED_AT},
-                'owner_id' => $this->getOwnerId(),
                 'user_id' => $this->getSystemUserId(),
                 'revisionable_parent' => $this->getRevisionableParentClass(),
                 'revisionable_parent_id' => $this->revisionParentId,
@@ -278,7 +277,6 @@ trait RevisionableTrait
                 'revisionable_id' => $this->getKey(),
                 'key' => $this->getDeletedAtColumn(),
                 'old_value' => null,
-                'owner_id' => $this->getOwnerId(),
                 'new_value' => $this->{$this->getDeletedAtColumn()},
                 'user_id' => $this->getSystemUserId(),
                 'revisionable_parent' => $this->getRevisionableParentClass(),
@@ -394,12 +392,12 @@ trait RevisionableTrait
     }
 
     /**
-     * Override this method in your model to return the identifiableName
+     * Override this method in your model to return the identifiableName.
      *
      * @return string an identifying name for the model
      */
     public function identifiableName()
-    {        
+    {
     }
 
     /**
