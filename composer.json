@@ -39,6 +39,9 @@
             "Convenia\\Revisionable\\Test\\": "tests"
         }
     },
+    "scripts": {
+        "test": "./vendor/bin/phpunit"
+    },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true
