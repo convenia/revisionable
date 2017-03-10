@@ -3,7 +3,6 @@ namespace Convenia\Revisionable\Test\Revisionable;
 
 use Carbon\Carbon;
 use Convenia\Revisionable\Test\TestCase;
-use Illuminate\Support\Collection;
 
 class FieldFormatterTest extends TestCase
 {
