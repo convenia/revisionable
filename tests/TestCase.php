@@ -66,7 +66,8 @@ abstract class TestCase extends Orchestra
             $table->increments('id');
             $table->string('name');
             $table->date('birth_date')->nullable();
-						$table->boolean('status')->nullable();
+            $table->boolean('status')->nullable();
+            $table->enum('gender', ['m', 'f'])->nullable();
             $table->timestamps();
         });
 

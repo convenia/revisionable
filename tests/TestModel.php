@@ -14,5 +14,6 @@ class TestModel extends Model
     protected $revisionFormattedFields = [
         'birth_date' => 'datetime:m/d/Y',
         'status' => 'boolean:inactive|active',
+        'gender' => 'multiple:m,Male|f,Female',
     ];
 }

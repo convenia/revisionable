@@ -32,4 +32,19 @@ class FieldFormatterTest extends TestCase
         });
     }
 
+    public function test_multiple_format()
+    {
+        $this->testModel->gender = 'f';
+        $this->testModel->save();
+
+        $this->testModel->gender = 'm';
+        $this->testModel->save();
+
+        $revisions = $this->testModel->revisionHistory;
+
+        $this->assertEquals('Male', $revisions->get(1)->newValue());
+        $this->assertEquals('Female', $revisions->get(1)->oldValue());
+
+    }
+
 }

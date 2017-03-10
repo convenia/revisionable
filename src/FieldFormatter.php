@@ -84,6 +84,32 @@ class FieldFormatter
     }
 
     /**
+     * Multiple.
+     *
+     * @param       $value
+     * @param array $options The multiple options values to return
+     *
+     * @return string Formatted version of the field
+     */
+    public static function multiple($value, $options = null)
+    {
+        if ($options !== null) {
+            $options = explode('|', $options);
+        }
+
+        if (count($options) === 0) {
+            return $value;
+        }
+
+        $formatMap = collect($options)->mapWithKeys(function ($format, $key){
+            $resultFormat = explode(',', $format);
+            return [$resultFormat[0] => $resultFormat[1]];
+        });
+
+        return isset($formatMap[$value]) ? $formatMap[$value] : $value;
+    }
+
+    /**
      * Format the string response, default is to just return the string.
      *
      * @param  $value
