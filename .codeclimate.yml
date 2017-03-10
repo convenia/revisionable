@@ -1,0 +1,21 @@
+---
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:      
+      - php
+  phpmd:
+    enabled: true
+    checks:
+      CleanCode/StaticAccess:
+        enabled: false
+  fixme:
+    enabled: true  
+ratings:
+  paths:  
+  - "**.php"  
+exclude_paths:
+- database/
+- docs/
+- tests/

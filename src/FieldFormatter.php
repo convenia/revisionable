@@ -101,8 +101,9 @@ class FieldFormatter
             return $value;
         }
 
-        $formatMap = collect($options)->mapWithKeys(function ($format, $key){
+        $formatMap = collect($options)->mapWithKeys(function ($format) {
             $resultFormat = explode(',', $format);
+
             return [$resultFormat[0] => $resultFormat[1]];
         });
 
