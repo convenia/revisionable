@@ -46,5 +46,19 @@ class FieldFormatterTest extends TestCase
         $this->assertEquals('Female', $revisions->get(1)->oldValue());
 
     }
+    
+    public function test_multiple_number_keys_format()
+    {
+        $this->testModel->order_status = 2;
+        $this->testModel->save();
+
+        $revisions = $this->testModel->revisionHistory;
+
+				$revisions->each(function ($revision) {
+						$this->assertEquals('Processing', $revision->newValue());
+						$this->assertEquals(null, $revision->oldValue());
+				});
+
+    }
 
 }

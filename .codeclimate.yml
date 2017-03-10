@@ -11,9 +11,7 @@ engines:
       CleanCode/StaticAccess:
         enabled: false
   fixme:
-    enabled: true
-  phpmd:
-    enabled: true
+    enabled: true  
 ratings:
   paths:  
   - "**.php"  

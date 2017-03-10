@@ -15,5 +15,6 @@ class TestModel extends Model
         'birth_date' => 'datetime:m/d/Y',
         'status' => 'boolean:inactive|active',
         'gender' => 'multiple:m,Male|f,Female',
+				'order_status' => 'multiple:1,Pending|2,Processing|10,Canceled',
     ];
 }
