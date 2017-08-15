@@ -60,6 +60,8 @@ php artisan migrate
 ## Docs
 
 * [Implementation](#implementation)
+  * [Soft deletes](#soft)
+  * [Creation](#create)
 * [Contributing](#contributing)
 
 
@@ -122,6 +124,7 @@ class Article extends Eloquent {
 }
 ```
 
+<a name="soft"></a>
 ### Storing soft deletes
 
 By default, if your model supports soft deletes, revisionable will store this and any restores as updates on the model.
@@ -131,7 +134,9 @@ You can choose to ignore deletes and restores by adding `deleted_at` to your `$d
 To better format the output for `deleted_at` entries, you can use the `isEmpty` formatter (see <a href="#format-output">Format output</a> for an example of this.)
 
 
+<a name="create"></a>
 ### Storing creations
+
 By default the creation of a new model is not stored as a revision.
 Only subsequent changes to a model is stored.
 
