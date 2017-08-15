@@ -1,6 +1,6 @@
 # Laravel revisionable
 
-![logo](laravel-revisionable.png)
+![logo](revisionable.png)
 
 ---
 
