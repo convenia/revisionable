@@ -100,6 +100,16 @@ trait RevisionableTrait
     {
         return $this->morphMany(Revision::class, 'revisionable');
     }
+    
+    public function withoutRevision()
+    {
+        $this->revisionEnabled = false;
+    }
+    
+    public function withRevision()
+    {
+        $this->revisionEnabled = true;
+    }
 
     /**
      * @return Collection
