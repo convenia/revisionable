@@ -243,23 +243,30 @@ trait RevisionableTrait
             return false;
         }
 
-        if ((! isset($this->revisionEnabled) || $this->revisionEnabled)) {
-            $revisions[] = [
-                'revisionable_type' => $this->getMorphClass(),
-                'revisionable_id' => $this->getKey(),
-                'key' => self::CREATED_AT,
-                'old_value' => null,
-                'new_value' => $this->{self::CREATED_AT},
-                'user_id' => $this->getSystemUserId(),
-                'revisionable_parent' => $this->getRevisionableParentClass(),
-                'revisionable_parent_id' => $this->revisionParentId,
-                'created_at' => new Carbon,
-                'updated_at' => new Carbon,
-            ];
+        if (! isset($this->revisionEnabled) || $this->revisionEnabled) {
+            $changesToRecord = $this->changedRevisionableFields();
 
-            $revision = new Revision;
-            \DB::table($revision->getTable())->insert($revisions);
-            \Event::fire('revisionable.created', ['model' => $this, 'revisions' => $revisions]);
+            $revisions = [];
+
+            foreach ($changesToRecord as $key => $change) {
+                $revisions[] = [
+                    'revisionable_type' => $this->getMorphClass(),
+                    'revisionable_id' => $this->getKey(),
+                    'key' => $key,
+                    'old_value' => null,
+                    'new_value' => array_get($this->updatedData, $key),
+                    'user_id' => $this->getSystemUserId(),
+                    'revisionable_parent' => $this->getRevisionableParentClass(),
+                    'revisionable_parent_id' => $this->revisionParentId,
+                    'created_at' => new Carbon,
+                    'updated_at' => new Carbon,
+                ];
+            }
+            if (count($revisions) > 0) {
+                $revision = new Revision;
+                \DB::table($revision->getTable())->insert($revisions);
+                \Event::fire('revisionable.created', ['model' => $this, 'revisions' => $revisions]);
+            }
         }
     }
 

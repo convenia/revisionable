@@ -62,6 +62,9 @@ abstract class TestCase extends Orchestra
      */
     protected function setUpDatabase($app)
     {
+        include_once __DIR__.'/../database/migrations/create_revisions_table.php.stub';
+        (new \CreateRevisionsTable())->up();
+
         $app['db']->connection()->getSchemaBuilder()->create('test_models', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
@@ -74,7 +77,5 @@ abstract class TestCase extends Orchestra
 
         TestModel::create(['name' => 'test']);
 
-        include_once __DIR__.'/../database/migrations/create_revisions_table.php.stub';
-        (new \CreateRevisionsTable())->up();
     }
 }

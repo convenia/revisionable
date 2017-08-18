@@ -3,10 +3,35 @@ namespace Convenia\Revisionable\Test\Revisionable;
 
 use Carbon\Carbon;
 use Convenia\Revisionable\Test\TestCase;
+use Convenia\Revisionable\Test\TestModelWithCreateEnabled;
+use DB;
 use Illuminate\Support\Collection;
+use Convenia\Revisionable\Test\TestModel;
 
 class RevisionableTest extends TestCase
 {
+  
+    public function test_revision_save_on_create()
+    {
+        DB::table('test_models')->truncate();
+
+        $insertData = [
+            'name' => 'New',
+            'gender' => 'f'
+        ];
+
+        $model = TestModelWithCreateEnabled::create($insertData);
+
+        $revisions = $model->revisionHistory;
+
+        $revisions->each(function ($revision) use ($insertData) {
+            $this->assertEquals($insertData[$revision->key], $revision->newValue());
+            $this->assertEquals(null, $revision->oldValue());
+        });
+
+        $this->assertInstanceOf(Collection::class, $revisions);
+    }
+    
     public function test_revision_is_stored()
     {
         $this->testModel->name = 'Changed';

@@ -1,6 +1,4 @@
-# Laravel revisionable
-
-![logo](laravel-revisionable.png)
+![logo](revisionable.png)
 
 ---
 
@@ -59,6 +57,96 @@ After the migration has been published you can create the revisions table by run
 php artisan migrate
 ```
 
+## Docs
+
+* [Implementation](#implementation)
+  * [Soft deletes](#soft)
+  * [Creation](#create)
+* [Contributing](#contributing)
+
+
+<a name="implementation"></a>
+## Implementation
+
+```php
+namespace App;
+
+use Convenia\Revisionable\RevisionableTrait;
+
+class Article extends Eloquent {
+  
+    use RevisionableTrait;
+}
+```
+
+If needed, you can disable the revisioning by setting `$revisionEnabled` to false in your model. This can be handy if you want to temporarily disable revisioning, or if you want to create your own base model that extends revisionable, which all of your models extend, but you want to turn revisionable off for certain models.
+
+```php
+namespace App;
+
+use Convenia\Revisionable\RevisionableTrait;
+
+class Article extends Eloquent {
+  
+    use RevisionableTrait;
+    
+    protected $revisionEnabled = false;
+}
+```
+
+You can also disable revisioning after X many revisions have been made by setting `$historyLimit` to the number of revisions you want to keep before stopping revisions.
+
+```php
+namespace App;
+
+use Convenia\Revisionable\RevisionableTrait;
+
+class Article extends Eloquent {
+  
+    use RevisionableTrait;
+        
+    protected $historyLimit = 500; //Stop tracking revisions after 500 changes have been made.
+}
+```
+In order to maintain a limit on history, but instead of stopping tracking revisions if you want to remove old revisions, you can accommodate that feature by setting `$revisionCleanup`.
+
+```php
+namespace App;
+
+use Convenia\Revisionable\RevisionableTrait;
+
+class Article extends Eloquent {
+  
+    use RevisionableTrait;
+            
+    protected $revisionCleanup = true; //Remove old revisions (works only when used with $historyLimit)
+    protected $historyLimit = 500; //Maintain a maximum of 500 changes at any point of time, while cleaning up old revisions.
+}
+```
+
+<a name="soft"></a>
+### Storing soft deletes
+
+By default, if your model supports soft deletes, revisionable will store this and any restores as updates on the model.
+
+You can choose to ignore deletes and restores by adding `deleted_at` to your `$dontKeepRevisionOf` array.
+
+To better format the output for `deleted_at` entries, you can use the `isEmpty` formatter (see <a href="#format-output">Format output</a> for an example of this.)
+
+
+<a name="create"></a>
+### Storing creations
+
+By default the creation of a new model is not stored as a revision.
+Only subsequent changes to a model is stored.
+
+If you want to store the creation as a revision you can override this behavior by setting `revisionCreationsEnabled` to `true` by adding the following to your model:
+```php
+protected $revisionCreationsEnabled = true;
+```
+
+
+<a name="contributing"></a>
 ## Contributing
 
 Contributions are encouraged and welcome; to keep things organised, all bugs and requests should be
