@@ -40,5 +40,21 @@ class SuspensionTest extends TestCase
         $model = TestModel::create(['name' => 'Test Name', 'Gender' => 'M']);
         $revisions = $model->revisionHistory;
         $this->assertCount(0, $revisions);
-    }    
+    }
+    
+    public function test_multiple_calls()
+    {
+        TestModel::withRevision();
+        $model = TestModel::create([
+            'name' => 'Test Name',
+            'gender' => 'F',    
+        ]);
+        $model->name = 'New Test Name';
+        $model->save();
+        $this->assertCount(1, $model->revisionHistory);
+        TestModel::withoutRevision();
+        $model->name = 'Another new test Name';
+        $model->save();
+        $this->assertCount(1, $model->revisionHistory);
+    }
 }
