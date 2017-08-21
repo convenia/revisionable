@@ -144,7 +144,6 @@ trait RevisionableTrait
     public function preSave()
     {
         if (self::$suspended === true) {
-            
             return;
         }
         if (! isset($this->revisionEnabled) || $this->revisionEnabled) {
