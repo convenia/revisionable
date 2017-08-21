@@ -37,7 +37,7 @@ class SuspensionTest extends TestCase
     public function test_creation_enabled_suspension()
     {
         TestModelWithCreateEnabled::withoutRevision();
-        $model = TestModel::create(['name' => 'Test Name', 'Gender' => 'M']);
+        $model = TestModelWithCreateEnabled::create(['name' => 'Test Name', 'Gender' => 'M']);
         $revisions = $model->revisionHistory;
         $this->assertCount(0, $revisions);
     }
@@ -54,6 +54,8 @@ class SuspensionTest extends TestCase
         $this->assertCount(1, $model->revisionHistory);
         TestModel::withoutRevision();
         $model->name = 'Another new test Name';
+        $model->save();
+        $model->gender = 'M';
         $model->save();
         $this->assertCount(1, $model->revisionHistory);
     }
