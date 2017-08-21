@@ -54,6 +54,8 @@ trait RevisionableTrait
 
     protected $revisionParentId = null;
 
+    protected static $suspended;
+
     /**
      * Ensure that the bootRevisionableTrait is called only
      * if the current installation is a laravel 4 installation
@@ -111,6 +113,16 @@ trait RevisionableTrait
             ->orderBy('updated_at', 'DESC')->get();
     }
 
+    public static function withoutRevision()
+    {
+        self::$suspended = true;
+    }
+
+    public static function withRevision()
+    {
+        self::$suspended = false;
+    }
+
     /**
      * Generates a list of the last $limit revisions made to any objects of the class it is being called from.
      *
@@ -131,6 +143,9 @@ trait RevisionableTrait
      */
     public function preSave()
     {
+        if (self::$suspended === true) {
+            return;
+        }
         if (! isset($this->revisionEnabled) || $this->revisionEnabled) {
             // if there's no revisionEnabled. Or if there is, if it's true
 

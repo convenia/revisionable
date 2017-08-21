@@ -123,6 +123,21 @@ class Article extends Eloquent {
     protected $historyLimit = 500; //Maintain a maximum of 500 changes at any point of time, while cleaning up old revisions.
 }
 ```
+You can suspend or set the revision temporarily by calling the methods withourRevision() and withRevision(). 
+
+```php
+
+    Article::withoutRevision();
+    $article = Article::create(['title' => 'Amazing Article']);
+    $article->title = 'New amazing Article';
+    $article->save();
+    ...
+    Article::withRevision();
+    $article->body = 'Text body of an amazing article';
+    $article->save();
+
+```
+However, this doesn't overrides the revisionEnabled variable. If you call the method withRevision() in a Model that has setted $revisionEnabled = false, the revision will not occur.
 
 <a name="soft"></a>
 ### Storing soft deletes
