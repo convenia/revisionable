@@ -53,6 +53,8 @@ trait RevisionableTrait
     protected $dirtyData = [];
 
     protected $revisionParentId = null;
+    
+    protected static $suspended;
 
     /**
      * Ensure that the bootRevisionableTrait is called only
@@ -100,16 +102,6 @@ trait RevisionableTrait
     {
         return $this->morphMany(Revision::class, 'revisionable');
     }
-    
-    public function withoutRevision()
-    {
-        $this->revisionEnabled = false;
-    }
-    
-    public function withRevision()
-    {
-        $this->revisionEnabled = true;
-    }
 
     /**
      * @return Collection
@@ -119,6 +111,16 @@ trait RevisionableTrait
         return Revision::where('revisionable_parent', get_called_class())
             ->where('revisionable_parent_id', $this->getKey())
             ->orderBy('updated_at', 'DESC')->get();
+    }
+    
+    public static function suspendRevision()
+    {
+        self::$suspended = true;
+    }
+    
+    public static function proceedRevision()
+    {
+        self::$suspended = false;
     }
 
     /**
@@ -141,6 +143,9 @@ trait RevisionableTrait
      */
     public function preSave()
     {
+        if (self::$suspended === true) {
+            return; 
+        }
         if (! isset($this->revisionEnabled) || $this->revisionEnabled) {
             // if there's no revisionEnabled. Or if there is, if it's true
 
