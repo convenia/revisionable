@@ -53,7 +53,7 @@ trait RevisionableTrait
     protected $dirtyData = [];
 
     protected $revisionParentId = null;
-    
+
     protected static $suspended;
 
     /**
@@ -112,12 +112,12 @@ trait RevisionableTrait
             ->where('revisionable_parent_id', $this->getKey())
             ->orderBy('updated_at', 'DESC')->get();
     }
-    
+
     public static function suspendRevision()
     {
         self::$suspended = true;
     }
-    
+
     public static function proceedRevision()
     {
         self::$suspended = false;
@@ -144,7 +144,8 @@ trait RevisionableTrait
     public function preSave()
     {
         if (self::$suspended === true) {
-            return; 
+            
+            return;
         }
         if (! isset($this->revisionEnabled) || $this->revisionEnabled) {
             // if there's no revisionEnabled. Or if there is, if it's true
