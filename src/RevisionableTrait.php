@@ -113,12 +113,12 @@ trait RevisionableTrait
             ->orderBy('updated_at', 'DESC')->get();
     }
 
-    public static function suspendRevision()
+    public static function withoutRevision()
     {
         self::$suspended = true;
     }
 
-    public static function proceedRevision()
+    public static function withRevision()
     {
         self::$suspended = false;
     }
