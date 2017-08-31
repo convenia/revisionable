@@ -76,6 +76,25 @@ abstract class TestCase extends Orchestra
         });
 
         TestModel::create(['name' => 'test']);
-
+        
+        $app['db']->connection()->getSchemaBuilder()->create('fathers', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
+        });
+        
+        $app['db']->connection()->getSchemaBuilder()->create('sons', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->integer('father_id')->nullable();
+            $table->integer('adoptive_id')->nullable();
+            $table->timestamps();
+        });
+        
+        $app['db']->connection()->getSchemaBuilder()->create('adoptive_parents', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
+        });
     }
 }

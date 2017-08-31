@@ -32,8 +32,11 @@ trait HelpersTrait
      *
      * @return string
      */
-    protected function getRelatedModel($key)
+    protected function getRelatedModel($key, $divergentRelations)
     {
+        if (array_key_exists($key, $divergentRelations)) {
+            return $divergentRelations[$key];
+        }
         $idSuffix = '_id';
 
         return substr($key, 0, strlen($key) - strlen($idSuffix));
