@@ -137,8 +137,7 @@ class Revision extends Eloquent
 
             try {
                 if ($this->isRelated($this->key)) {
-                    $relatedModel = $this->getRelatedModel($this->key, $mainModel->divergentRelations);
-                    
+                    $relatedModel = $this->getRelatedModel($this->key, $mainModel->divergentRelations);                    
                     // Now we can find out the namespace of the related model
                     if (! method_exists($mainModel, $relatedModel)) {
                         $relatedModel = camel_case($relatedModel); // for cases like published_status_id
