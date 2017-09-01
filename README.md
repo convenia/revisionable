@@ -140,6 +140,69 @@ You can suspend or set the revision temporarily by calling the methods withourRe
 However, this doesn't overrides the revisionEnabled variable. If you call the method withRevision() in a Model that has setted $revisionEnabled = false, the revision will not occur.
 
 <a name="soft"></a>
+### Divergent column and model names
+
+Sometimes a model can have a relationship in which the column associated doesn't follow the eloquent pattern, being needed to specify the foreign. In these cases, you need to declare an array called divergentRelations, where the column name points to the model name, in lowercase. This makes possible to query the relationship field value (like name or title), when using the methods newValue or oldValue on the revision
+
+```php
+
+class Article extends Model
+{
+    public $divergentRelations = [ 
+        'quoted_id' => 'quotedauthors',
+    ]; 
+    public function quotedAuthors() 
+    {
+        return $this->belongsTo(QuotedAuthors::class, 'quoted_id');
+    }
+}
+
+class QuotedAuthor extends Model
+{
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
+}
+    
+    ...
+    $newQuotedAuthor = QuotedAuthor::create(['name' => 'New Quoted Author']);
+    $article->quoted_id = $newQuotedAuthor->id;
+    $article->save();
+    $revision = $article->revisionHistory()->first();
+    $revision->newValue() = 'New Quoted Author';
+
+```
+
+If you don't set the array $divergentRelations and tries to get the revision newValue, you would get the id instead of the name or title;
+
+```php
+
+class Article extends Model
+{
+    public function quotedAuthors() 
+    {
+        return $this->belongsTo(QuotedAuthors::class, 'quoted_id');
+    }
+}
+
+class QuotedAuthor extends Model
+{
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
+}
+    
+    ...
+    $newQuotedAuthor = QuotedAuthor::create(['name' => 'New Quoted Author']);
+    $article->quoted_id = $newQuotedAuthor->id;
+    $article->save();
+    $revision = $article->revisionHistory()->first();
+    $revision->newValue() = 1 ;
+
+```
+<a name="soft"></a>
 ### Storing soft deletes
 
 By default, if your model supports soft deletes, revisionable will store this and any restores as updates on the model.
