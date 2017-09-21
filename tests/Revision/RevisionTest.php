@@ -31,9 +31,22 @@ class RevisionTest extends TestCase
 		$son->save();
 		$revision = $son->revisionHistory()->first();
 		$this->assertEquals($revision->newValue(), $this->father->name)	;
-	}	
-	
-	public function test_revision_divergent_relationship()
+	}
+
+    public function test_revision_regular_relationship_with_hours()
+    {
+        DB::table('sons')->truncate();
+        $son = Son::create(['name' => 'Test Son']);
+        $son->father_id = $this->father->id;
+        $son->save();
+        $revision = $son->revisionHistoryHours();
+        $revision->first()->created_at = '2012-09-21 19:46:37';
+        $revision->first()->save();
+        $this->assertEquals($son->revisionHistoryHours()->count(), 0);
+
+    }
+
+    public function test_revision_divergent_relationship()
 	{
 		DB::table('sons')->truncate();
 		$son = Son::create(['name' => 'Test Son']);
@@ -42,5 +55,4 @@ class RevisionTest extends TestCase
 		$revision = $son->revisionHistory()->first();
 		$this->assertEquals($revision->newValue(), $this->adoptiveParent->name);
 	}
-	
 }

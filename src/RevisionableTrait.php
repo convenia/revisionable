@@ -104,7 +104,8 @@ trait RevisionableTrait
     }
 
     /**
-     * @return miexed
+     * @param int $hours
+     * @return mixed
      */
     public function revisionHistoryHours($hours = 1)
     {
@@ -113,7 +114,7 @@ trait RevisionableTrait
 
         return $this->morphMany(Revision::class, 'revisionable')
             ->where('created_at', '>=', $referenceDate)
-            ->orderBy('updated_at', 'DESC')->get();;
+            ->orderBy('updated_at', 'DESC')->get();
     }
 
     /**
@@ -127,6 +128,7 @@ trait RevisionableTrait
     }
 
     /**
+     * @param int $hours
      * @return Collection
      */
     public function revisionChildHistoryHours($hours = 1)

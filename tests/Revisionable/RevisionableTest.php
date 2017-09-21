@@ -69,4 +69,48 @@ class RevisionableTest extends TestCase
 
         $this->assertCount(0, $revisions);
     }
+
+    public function test_revision_child()
+    {
+        $this->testModelWithParent->parent_id = $this->testModelParent->id;
+        $this->testModelWithParent->save();
+
+        $revisions = $this->testModelParent->revisionChildHistory();
+
+        $this->assertCount(1, $revisions);
+    }
+
+    public function test_revision_child_with_hours_filter()
+    {
+        $this->testModelWithParent->parent_id = $this->testModelParent->id;
+        $this->testModelWithParent->save();
+
+        $revisions = $this->testModelParent->revisionChildHistoryHours();
+        $revisions->first()->created_at = '2012-09-21 19:46:37';
+        $revisions->first()->save();
+        $revisions = $this->testModelParent->revisionChildHistoryHours();
+        $this->assertCount(0, $revisions);
+    }
+
+    public function test_revision()
+    {
+        $this->testModel->name = 'Changed';
+        $this->testModel->save();
+
+        $revisions = $this->testModel->revisionHistory()->get();
+
+        $this->assertCount(1, $revisions);
+    }
+
+    public function test_revision_with_hours()
+    {
+        $this->testModel->name = 'Changed';
+        $this->testModel->save();
+
+        $revisions = $this->testModel->revisionHistoryHours();
+        $revisions->first()->created_at = '2012-09-21 19:46:37';
+        $revisions->first()->save();
+        $revisions = $this->testModel->revisionHistoryHours();
+        $this->assertCount(0, $revisions);
+    }
 }
