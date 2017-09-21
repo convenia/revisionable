@@ -104,12 +104,39 @@ trait RevisionableTrait
     }
 
     /**
+     * @return miexed
+     */
+    public function revisionHistoryHours($hours = 1)
+    {
+        $referenceDate = Carbon::now();
+        $referenceDate->subHours($hours);
+
+        return $this->morphMany(Revision::class, 'revisionable')
+            ->where('created_at', '>=', $referenceDate)
+            ->orderBy('updated_at', 'DESC')->get();;
+    }
+
+    /**
      * @return Collection
      */
     public function revisionChildHistory()
     {
         return Revision::where('revisionable_parent', get_called_class())
             ->where('revisionable_parent_id', $this->getKey())
+            ->orderBy('updated_at', 'DESC')->get();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function revisionChildHistoryHours($hours = 1)
+    {
+        $referenceDate = Carbon::now();
+        $referenceDate->subHours($hours);
+
+        return Revision::where('revisionable_parent', get_called_class())
+            ->where('revisionable_parent_id', $this->getKey())
+            ->where('created_at', '>=', $referenceDate)
             ->orderBy('updated_at', 'DESC')->get();
     }
 
