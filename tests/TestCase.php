@@ -20,6 +20,12 @@ abstract class TestCase extends Orchestra
     /** @var \Convenia\Revisionable\Test\TestModelWithRevisionDisabled */
     protected $testModelWithRevisionDisabled;
 
+    /** @var \Convenia\Revisionable\Test\TestModelWithRevisionDisabled */
+    protected $testModelParent;
+
+    /** @var \Convenia\Revisionable\Test\TestModelWithRevisionDisabled */
+    protected $testModelWithParent;
+
     public function setUp()
     {
         parent::setUp();
@@ -28,6 +34,8 @@ abstract class TestCase extends Orchestra
         $this->testModel = TestModel::first();
         $this->testModelWithLimit = TestModelWithLimit::first();
         $this->testModelWithRevisionDisabled = TestModelWithRevisionDisabled::first();
+        $this->testModelParent = TestModelParent::first();
+        $this->testModelWithParent = TestModelWithParent::first();
     }
 
     /**
@@ -72,6 +80,7 @@ abstract class TestCase extends Orchestra
             $table->boolean('status')->nullable();
             $table->enum('gender', ['m', 'f'])->nullable();
             $table->string('order_status')->nullable();
+            $table->string('parent_id')->nullable();
             $table->timestamps();
         });
 
