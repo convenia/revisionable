@@ -223,6 +223,70 @@ If you want to store the creation as a revision you can override this behavior b
 protected $revisionCreationsEnabled = true;
 ```
 
+<a name="formatoutput"></a>
+## Format output
+
+> You can continue (and are encouraged to) use `eloquent accessors` in your model to set the
+output of your values, see the [laravel docs for more information on accessors](http://laravel.com/docs/eloquent-mutators#accessors-and-mutators)
+> The below documentation is therefor deprecated
+
+In cases where you want to have control over the format of the output of the values, for example a boolean field, you can set them in the `$revisionFormattedFields` array in your model. e.g.,
+
+```php
+protected $revisionFormattedFields = array(
+    'title'  => 'string:<strong>%s</strong>',
+    'public' => 'boolean:No|Yes',
+    'modified' => 'datetime:m/d/Y g:i A',
+    'deleted_at' => 'isEmpty:Active|Deleted'
+);
+```
+
+You can also override the field name output using the `$revisionFormattedFieldNames` array in your model, e.g.,
+
+```php
+protected $revisionFormattedFieldNames = array(
+    'title' => 'Title',
+    'small_name' => 'Nickname',
+    'deleted_at' => 'Deleted At'
+);
+```
+
+This comes into play when you output the revision field name using `$revision->fieldName()`
+
+### String
+To format a string, simply prefix the value with `string:` and be sure to include `%s` (this is where the actual value will appear in the formatted response), e.g.,
+
+```
+string:<strong>%s</strong>
+```
+
+### Boolean
+Booleans by default will display as a 0 or a 1, which is pretty bland and won't mean much to the end user, so this formatter can be used to output something a bit nicer. Prefix the value with `boolean:` and then add your false and true options separated by a pipe, e.g.,
+
+```
+boolean:No|Yes
+```
+
+### DateTime
+DateTime by default will display as Y-m-d H:i:s. Prefix the value with `datetime:` and then add your datetime format, e.g.,
+
+```
+datetime:m/d/Y g:i A
+```
+
+### Is Empty
+This piggy backs off boolean, but instead of testing for a true or false value, it checks if the value is either null or an empty string.
+
+```
+isEmpty:No|Yes
+```
+
+This can also accept `%s` if you'd like to output the value, something like the following will display 'Nothing' if the value is empty, or the actual value if something exists:
+
+```
+isEmpty:Nothing|%s
+```
+
 
 <a name="contributing"></a>
 ## Contributing
